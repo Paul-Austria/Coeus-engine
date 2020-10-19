@@ -2,7 +2,7 @@ package projectDemo;
 
 import paul.coeus.Engine;
 import paul.coeus.base.IGameLogic;
-import paul.coeus.base.Scene;
+import paul.coeus.base.IScene;
 import paul.coeus.graphics.Mesh;
 import paul.coeus.graphics.Textures.Animation;
 import paul.coeus.graphics.Textures.Texture;
@@ -10,7 +10,7 @@ import paul.coeus.objects.Base.GameObject;
 import paul.coeus.objects.ImagePlane;
 import paul.coeus.utils.LoadObjects;
 
-public class DemoScene implements Scene {
+public class DemoScene implements IScene {
     IGameLogic gameLogic;
     @Override
     public void init(IGameLogic gameLogic) throws Exception {
@@ -29,7 +29,7 @@ public class DemoScene implements Scene {
                     new Texture("src/main/Texture/MarioAnimation/maria2.png"),
                     new Texture("src/main/Texture/MarioAnimation/maria3.png")
                 };
-                im.setAnimation("Standard",new Animation(texturel, 5));
+                im.setAnimation("Standard",new Animation(texturel, 7));
                 im.useAnimation("Standard");
             } catch (Exception e) {
                 e.printStackTrace();

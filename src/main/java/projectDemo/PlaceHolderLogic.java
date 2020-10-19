@@ -1,16 +1,11 @@
 package projectDemo;
 
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 import paul.coeus.Engine;
 import paul.coeus.base.IGameLogic;
-import paul.coeus.base.Scene;
+import paul.coeus.base.IScene;
 import paul.coeus.base.Window;
 import paul.coeus.graphics.Camera;
-import paul.coeus.graphics.Mesh;
-import paul.coeus.graphics.Textures.Texture;
-import paul.coeus.objects.Base.GameObject;
-import paul.coeus.utils.LoadObjects;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +20,7 @@ public class PlaceHolderLogic implements IGameLogic {
     private  float MOUSE_SENSITIVITY = 0.2f;
     private  float moveSpeed = 0.1f;
     private final Vector3f cameraInc;
-    private List<Scene> scenes;
+    private List<IScene> scenes;
 
     public Camera getCamera() {
         return camera;
@@ -87,7 +82,7 @@ public class PlaceHolderLogic implements IGameLogic {
     }
 
     @Override
-    public void startNewScene(Scene scene) {
+    public void startNewScene(IScene scene) {
         try {
             engine.clearGameObject();
             scene.init(this);

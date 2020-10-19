@@ -1,9 +1,7 @@
 package paul.coeus.objects;
 
-import org.w3c.dom.Text;
 import paul.coeus.graphics.Mesh;
 import paul.coeus.graphics.Textures.Animation;
-import paul.coeus.graphics.Textures.Texture;
 import paul.coeus.objects.Base.GameObject;
 
 import java.util.HashMap;
@@ -62,7 +60,7 @@ public class ImagePlane extends GameObject {
 
     public void updateAnimation(float timepassed)
     {
-        if(isAnimating)getMesh().setTexture( currentAni.getNext(timepassed));
+        if(isAnimating)getMesh().setTexture( currentAni.getNextTexture(timepassed));
     }
 
 }

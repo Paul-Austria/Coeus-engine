@@ -8,7 +8,7 @@ public interface IGameLogic {
     void input(Window window);
     void update(float interval);
     void lateInit();
-    void startNewScene(Scene scene);
+    void startNewScene(IScene scene);
     public Camera getCamera();
 
     public Engine getEngine();
