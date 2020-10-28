@@ -1,7 +1,10 @@
 package paul.coeus.objects.Base;
 
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import paul.coeus.graphics.Mesh;
+import paul.coeus.graphics.graphUtils.Transformation;
+import paul.coeus.utils.ShaderProgram;
 
 public class GameObject {
     private Mesh mesh;
@@ -50,6 +53,13 @@ public class GameObject {
         this.rotation.x = x;
         this.rotation.y = y;
         this.rotation.z = z;
+    }
+
+    public void setLocalUniforms(ShaderProgram shaderProgram, Matrix4f viewMatrix, Transformation transformation){
+        Matrix4f modelViewMatrix = transformation.getModelViewMatrix(this, viewMatrix);
+        shaderProgram.setUniform("modelViewMatrix", modelViewMatrix);
+
+        shaderProgram.setUniform("material", getMesh().getMaterial());
     }
 
     public void update()

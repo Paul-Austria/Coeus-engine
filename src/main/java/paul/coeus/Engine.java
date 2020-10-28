@@ -1,15 +1,12 @@
 package paul.coeus;
 
-import org.joml.Vector4f;
 import paul.coeus.base.IGameLogic;
 import paul.coeus.base.Window;
 import paul.coeus.graphics.Camera;
-import paul.coeus.graphics.Mesh;
-import paul.coeus.graphics.Textures.Texture;
+import paul.coeus.graphics.Material.Lights.PointLight;
 import paul.coeus.objects.Base.GameObject;
 import paul.coeus.objects.ImagePlane;
 import paul.coeus.utils.IO.MouseInput;
-import paul.coeus.utils.LoadObjects;
 import paul.coeus.utils.Timer;
 
 import java.util.ArrayList;
@@ -28,11 +25,14 @@ public class Engine extends Thread {
     private List<GameObject> gameObjectList;
     private GameObject[] gameObjectArray;
 
+    private List<PointLight> pointLightList;
+    private PointLight[] pointLights;
 
 
     public Engine(String title, int width, int height, boolean vSync, IGameLogic gameLogic)
     {
         gameObjectList = new ArrayList<>();
+        pointLightList = new ArrayList<>();
         window = new Window(title, width, height, vSync);
         this.gameLogic = gameLogic;
         mouseInput = new MouseInput();
@@ -67,6 +67,8 @@ public class Engine extends Thread {
     {
         gameObjectList.clear();
         gameObjectArray = new GameObject[0];
+        pointLightList.clear();
+        pointLights = new PointLight[0];
     }
 
     public boolean addGameObject(GameObject gameObject){
@@ -78,6 +80,29 @@ public class Engine extends Thread {
         }
         return false;
     }
+
+    public boolean addPointLight(PointLight pointLight)
+    {
+        if(!pointLightList.contains(pointLight))
+        {
+            pointLightList.add(pointLight);
+            pointLights = pointLightList.toArray(new PointLight[pointLightList.size()]);
+            return  true;
+        }
+        return false;
+    }
+
+    public boolean removePointLight(PointLight pointLight)
+    {
+        if(pointLightList.contains(pointLight))
+        {
+            pointLightList.remove(pointLight);
+            pointLights = pointLightList.toArray(new PointLight[pointLightList.size()]);
+            return  true;
+        }
+        return false;
+    }
+
     public boolean removeGameObject(GameObject gameObject){
         if(gameObjectList.contains(gameObject))
         {
@@ -114,7 +139,7 @@ public class Engine extends Thread {
     }
 
     private void render(){
-        renderer.render(window,gameObjectArray,camera);
+        renderer.render(window,gameObjectArray,pointLights,camera);
         window.update();
     }
 

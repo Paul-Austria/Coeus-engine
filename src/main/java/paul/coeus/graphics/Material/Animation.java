@@ -1,4 +1,4 @@
-package paul.coeus.graphics.Textures;
+package paul.coeus.graphics.Material;
 
 public class Animation {
 

@@ -2,7 +2,8 @@ package paul.coeus.graphics;
 
 import org.joml.Vector4f;
 import org.lwjgl.system.MemoryUtil;
-import paul.coeus.graphics.Textures.Texture;
+import paul.coeus.graphics.Material.Material;
+import paul.coeus.graphics.Material.Texture;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -34,14 +35,21 @@ public class Mesh {
 
     private final int vertexCount;
     private Vector4f colour = new Vector4f(1,1,1,1f);
-    private Texture texture;
-
+    private Material material;
     public Texture getTexture() {
-        return texture;
+        return this.material.getTexture();
     }
 
     public void setTexture(Texture texture) {
-        this.texture = texture;
+        this.material.setTexture(texture);
+    }
+
+    public Material getMaterial() {
+        return material;
+    }
+
+    public void setMaterial(Material material) {
+        this.material = material;
     }
 
     public Mesh(float[] positions, float[] textCoords, int[] indices, float[] normals, Texture texture) {
@@ -50,7 +58,7 @@ public class Mesh {
         IntBuffer indicesBuffer = null;
         FloatBuffer vecNormalsBuffer = null;
         try {
-            this.texture = texture;
+            this.material = new Material(texture);
             vertexCount = indices.length;
             vboIdList = new ArrayList<>();
 
@@ -121,7 +129,7 @@ public class Mesh {
         // Activate firs texture bank
         glActiveTexture(GL_TEXTURE0);
         // Bind the texture
-        if(texture != null)        glBindTexture(GL_TEXTURE_2D, texture.getId());
+        if(getTexture() != null)        glBindTexture(GL_TEXTURE_2D, getTexture().getId());
 
         // Draw the mesh
         glBindVertexArray(getVaoId());
@@ -149,22 +157,11 @@ public class Mesh {
         }
 
         // Delete the texture
-        texture.cleanup();
+        getTexture().cleanup();
 
         // Delete the VAO
         glBindVertexArray(0);
         glDeleteVertexArrays(vaoId);
     }
 
-    public void setColour(Vector4f colour)
-    {
-        this.colour = colour;
-    }
-    public Vector4f getColour() {
-        return colour;
-    }
-
-    public boolean isTextured() {
-        return texture != null;
-    }
 }

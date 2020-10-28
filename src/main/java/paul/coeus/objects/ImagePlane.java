@@ -1,7 +1,7 @@
 package paul.coeus.objects;
 
 import paul.coeus.graphics.Mesh;
-import paul.coeus.graphics.Textures.Animation;
+import paul.coeus.graphics.Material.Animation;
 import paul.coeus.objects.Base.GameObject;
 
 import java.util.HashMap;
@@ -12,7 +12,7 @@ public class ImagePlane extends GameObject {
     Animation currentAni;
     Boolean isAnimating = true;
     Map<String, Animation> AnimationMap;
-    public ImagePlane(int imageWidth, int imageHeight, float devider)
+    public ImagePlane(int imageWidth, int imageHeight, float devider, boolean includeNormals)
     {
         super();
         AnimationMap = new HashMap<>();
@@ -33,7 +33,24 @@ public class ImagePlane extends GameObject {
             0,1,
             0,0
          };
-        float[] normals = new float[12];
+
+
+        /*
+
+         */
+        float[] normals;
+        if(includeNormals)
+        {
+            normals = new float[]{
+                    1.0f, 0f, 0f,
+                    1.0f, 0f, 0f,
+                    1.0f, 0f, 0f,
+                    1.0f, 0f, 0f
+            };
+        }
+        else {
+            normals = new float[12];
+        }
         Mesh mesh = new Mesh(pos, textures, indices, normals, null);
         super.setMesh(mesh);
     }

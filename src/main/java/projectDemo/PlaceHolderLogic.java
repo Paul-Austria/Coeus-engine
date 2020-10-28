@@ -21,6 +21,11 @@ public class PlaceHolderLogic implements IGameLogic {
     private  float moveSpeed = 0.1f;
     private final Vector3f cameraInc;
     private List<IScene> scenes;
+    private IScene currentScene;
+
+    public IScene getCurrentScene() {
+        return currentScene;
+    }
 
     public Camera getCamera() {
         return camera;
@@ -73,7 +78,7 @@ public class PlaceHolderLogic implements IGameLogic {
 
     @Override
     public void update(float interval) {
-
+        currentScene.update(interval);
     }
 
     @Override
@@ -86,6 +91,7 @@ public class PlaceHolderLogic implements IGameLogic {
         try {
             engine.clearGameObject();
             scene.init(this);
+            currentScene = scene;
         } catch (Exception e) {
             e.printStackTrace();
         }

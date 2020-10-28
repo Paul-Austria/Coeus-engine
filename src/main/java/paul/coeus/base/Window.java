@@ -6,6 +6,7 @@ import org.lwjgl.opengl.GL;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL13.GL_MULTISAMPLE;
 import static org.lwjgl.system.MemoryUtil.*;
 
 public class Window {
@@ -76,10 +77,13 @@ public class Window {
 
         GL.createCapabilities();
 
-        glClearColor(0.0f, .4f, 1.0f, 0.0f);
+        glClearColor(0.0f, 0, 0, 0.0f);
 
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable( GL_BLEND );
+        glEnable(GL_MULTISAMPLE);
+
+
         glEnable(GL_DEPTH_TEST);
         //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);  // this tells it to only render lines
     }

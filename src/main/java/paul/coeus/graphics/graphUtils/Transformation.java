@@ -3,6 +3,7 @@ package paul.coeus.graphics.graphUtils;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import paul.coeus.graphics.Camera;
+import paul.coeus.graphics.Material.Lights.PointLight;
 import paul.coeus.objects.Base.GameObject;
 
 public class Transformation {
@@ -46,6 +47,16 @@ public class Transformation {
                 rotateY((float)Math.toRadians(-rotation.y)).
                 rotateZ((float)Math.toRadians(-rotation.z)).
                 scale(gameObject.getScale());
+        Matrix4f viewCurr = new Matrix4f(viewMatrix);
+        return viewCurr.mul(modelViewMatrix);
+    }
+    public Matrix4f getModelViewMatrix(PointLight gameObject, Matrix4f viewMatrix) {
+        Vector3f rotation = gameObject.getGameObject().getRotation();
+        modelViewMatrix.identity().translate(gameObject.getPosition()).
+                rotateX((float)Math.toRadians(-rotation.x)).
+                rotateY((float)Math.toRadians(-rotation.y)).
+                rotateZ((float)Math.toRadians(-rotation.z)).
+                scale(gameObject.getGameObject().getScale());
         Matrix4f viewCurr = new Matrix4f(viewMatrix);
         return viewCurr.mul(modelViewMatrix);
     }

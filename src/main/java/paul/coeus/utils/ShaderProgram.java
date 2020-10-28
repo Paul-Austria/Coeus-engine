@@ -4,6 +4,9 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.system.MemoryStack;
+import paul.coeus.graphics.Material.Lights.DirectionalLight;
+import paul.coeus.graphics.Material.Lights.PointLight;
+import paul.coeus.graphics.Material.Material;
 
 import java.nio.FloatBuffer;
 import java.util.HashMap;
@@ -36,6 +39,35 @@ public class ShaderProgram {
         fragmentShaderId = createShader(shaderCode, GL_FRAGMENT_SHADER);
     }
 
+    public void createDirectionalLightUniform(String uniformName) throws Exception {
+        createUniform(uniformName + ".colour");
+        createUniform(uniformName + ".direction");
+        createUniform(uniformName + ".intensity");
+    }
+
+    public void setUniform(String uniformName, DirectionalLight dirLight) {
+        setUniform(uniformName + ".colour", dirLight.getColor() );
+        setUniform(uniformName + ".direction", dirLight.getDirection());
+        setUniform(uniformName + ".intensity", dirLight.getIntensity());
+    }
+
+    public void createMaterialUniform(String uniformName) throws Exception {
+        createUniform(uniformName + ".ambient");
+        createUniform(uniformName + ".diffuse");
+        createUniform(uniformName + ".specular");
+        createUniform(uniformName + ".hasTexture");
+        createUniform(uniformName + ".reflectance");
+    }
+
+    public void createPointLightUniform(String uniformName) throws Exception {
+        createUniform(uniformName + ".colour");
+        createUniform(uniformName + ".position");
+        createUniform(uniformName + ".intensity");
+        createUniform(uniformName + ".att.constant");
+        createUniform(uniformName + ".att.linear");
+        createUniform(uniformName + ".att.exponent");
+    }
+
     public void setUniform(String uniformName, Matrix4f value) {
         // Dump the matrix into a float buffer
         try (MemoryStack stack = MemoryStack.stackPush()) {
@@ -53,8 +85,30 @@ public class ShaderProgram {
         glUniform4f(uniforms.get(uniformName), value.x, value.y, value.z, value.w);
     }
 
+    public void setUniform(String uniformName, PointLight pointLight) {
+        setUniform(uniformName + ".colour", pointLight.getColor());
+        setUniform(uniformName + ".position", pointLight.getPosition());
+        setUniform(uniformName + ".intensity", pointLight.getIntensity());
+        PointLight.Attenuation att = pointLight.getAttenuation();
+        setUniform(uniformName + ".att.constant", att.getConstant());
+        setUniform(uniformName + ".att.linear", att.getLinear());
+        setUniform(uniformName + ".att.exponent", att.getExponent());
+    }
+
+    public void setUniform(String uniformName, Material material) {
+        setUniform(uniformName + ".ambient", material.getAmbientC());
+        setUniform(uniformName + ".diffuse", material.getDiffuseC());
+        setUniform(uniformName + ".specular", material.getSpecularC());
+        setUniform(uniformName + ".hasTexture", material.isTextured() ? 1 : 0);
+        setUniform(uniformName + ".reflectance", material.getReflectance());
+    }
+
     public void setUniform(String uniformName, int value) {
         glUniform1i(uniforms.get(uniformName), value);
+    }
+
+    public void setUniform(String uniformName, float value) {
+        glUniform1f(uniforms.get(uniformName), value);
     }
 
     public void createUniform(String uniformName) throws Exception {
@@ -84,6 +138,8 @@ public class ShaderProgram {
 
         return shaderId;
     }
+
+
 
     public void link() throws Exception {
         glLinkProgram(programId);
@@ -115,5 +171,22 @@ public class ShaderProgram {
         if (programId != 0) {
             glDeleteProgram(programId);
         }
+    }
+
+    public void createPointLightListUniform(String uniformName, int size) throws Exception {
+        for (int i = 0; i < size; i++) {
+            createPointLightUniform(uniformName + "[" + i + "]");
+        }
+    }
+
+    public void setUniform(String uniformName, PointLight[] pointLights) {
+        int numLights = pointLights != null ? pointLights.length : 0;
+        for (int i = 0; i < numLights; i++) {
+            setUniform(uniformName, pointLights[i], i);
+        }
+    }
+
+    public void setUniform(String uniformName, PointLight pointLight, int pos) {
+        setUniform(uniformName + "[" + pos + "]", pointLight);
     }
 }
