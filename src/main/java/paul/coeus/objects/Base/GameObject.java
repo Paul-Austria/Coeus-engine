@@ -4,6 +4,8 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import paul.coeus.graphics.Mesh;
 import paul.coeus.graphics.graphUtils.Transformation;
+import paul.coeus.objects.Base.ShaderHandler.BaseShaderHandler;
+import paul.coeus.objects.Base.ShaderHandler.IShaderHandler;
 import paul.coeus.utils.ShaderProgram;
 
 public class GameObject {
@@ -58,7 +60,6 @@ public class GameObject {
     public void setLocalUniforms(ShaderProgram shaderProgram, Matrix4f viewMatrix, Transformation transformation){
         Matrix4f modelViewMatrix = transformation.getModelViewMatrix(this, viewMatrix);
         shaderProgram.setUniform("modelViewMatrix", modelViewMatrix);
-
         shaderProgram.setUniform("material", getMesh().getMaterial());
     }
 
@@ -73,5 +74,9 @@ public class GameObject {
 
     public Mesh getMesh() {
         return mesh;
+    }
+
+    public IShaderHandler getShader() {
+        return new BaseShaderHandler();
     }
 }

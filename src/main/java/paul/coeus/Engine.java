@@ -3,13 +3,18 @@ package paul.coeus;
 import paul.coeus.base.IGameLogic;
 import paul.coeus.base.Window;
 import paul.coeus.graphics.Camera;
+import paul.coeus.graphics.Material.Animation;
 import paul.coeus.graphics.Material.Lights.PointLight;
 import paul.coeus.objects.Base.GameObject;
+import paul.coeus.objects.Base.ShaderHandler.BaseShaderHandler;
+import paul.coeus.objects.Base.ShaderHandler.IShaderHandler;
 import paul.coeus.objects.ImagePlane;
 import paul.coeus.utils.IO.MouseInput;
+import paul.coeus.utils.ShaderProgram;
 import paul.coeus.utils.Timer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Engine extends Thread {
@@ -21,17 +26,20 @@ public class Engine extends Thread {
     private MouseInput mouseInput;
     public static final int TARGET_UPS = 30;
     Camera camera;
-
-    private List<GameObject> gameObjectList;
     private GameObject[] gameObjectArray;
 
+    private HashMap<Class, List<GameObject>> gameObjects;
+
+    private List<IShaderHandler> shaders;
     private List<PointLight> pointLightList;
     private PointLight[] pointLights;
 
 
     public Engine(String title, int width, int height, boolean vSync, IGameLogic gameLogic)
     {
-        gameObjectList = new ArrayList<>();
+        gameObjects = new HashMap<>();
+        shaders = new ArrayList<>();
+        shaders.add(new BaseShaderHandler());
         pointLightList = new ArrayList<>();
         window = new Window(title, width, height, vSync);
         this.gameLogic = gameLogic;
@@ -59,24 +67,29 @@ public class Engine extends Thread {
         timer.init();
         gameLogic.init(window,this);
         window.init();
-        renderer.init(window);
+        renderer.init(window, shaders);
         gameLogic.lateInit();
     }
 
     public void clearGameObject()
     {
-        gameObjectList.clear();
+        gameObjects.clear();
         gameObjectArray = new GameObject[0];
         pointLightList.clear();
         pointLights = new PointLight[0];
     }
 
     public boolean addGameObject(GameObject gameObject){
-        if(!gameObjectList.contains(gameObject))
+        if(!gameObjects.containsKey(gameObject.getShader().getClass()))
         {
-            gameObjectList.add(gameObject);
-            gameObjectArray = gameObjectList.toArray(new GameObject[gameObjectList.size()]);
+            List nList = new ArrayList();
+            nList.add(gameObject);
+            gameObjects.put(gameObject.getShader().getClass(), nList);
             return  true;
+        }
+        else if(!gameObjects.get(gameObject.getShader().getClass()).contains(gameObject))
+        {
+            gameObjects.get(gameObject.getShader().getClass()).add(gameObject);
         }
         return false;
     }
@@ -92,6 +105,15 @@ public class Engine extends Thread {
         return false;
     }
 
+    public void addShader(IShaderHandler shaderHandler)
+    {
+        shaders.add(shaderHandler);
+    }
+    public void removeShader(IShaderHandler shaderHandler)
+    {
+        shaders.remove(shaderHandler);
+    }
+
     public boolean removePointLight(PointLight pointLight)
     {
         if(pointLightList.contains(pointLight))
@@ -104,11 +126,9 @@ public class Engine extends Thread {
     }
 
     public boolean removeGameObject(GameObject gameObject){
-        if(gameObjectList.contains(gameObject))
+        if(gameObjects.containsKey(gameObject.getShader().getClass()))
         {
-            gameObjectList.remove(gameObject);
-            gameObjectArray = gameObjectList.toArray(new GameObject[gameObjectList.size()]);
-            return  true;
+            return gameObjects.get(gameObject.getShader().getClass()).remove(gameObject);
         }
         return false;
     }
@@ -139,7 +159,7 @@ public class Engine extends Thread {
     }
 
     private void render(){
-        renderer.render(window,gameObjectArray,pointLights,camera);
+        renderer.render(window,gameObjects,shaders,pointLights,camera);
         window.update();
     }
 
@@ -164,12 +184,13 @@ public class Engine extends Thread {
 
     protected void update(float interval){
         gameLogic.input(window);
-        for (GameObject g: gameObjectList) {
-            if(g instanceof ImagePlane)
-            {
-                ((ImagePlane)g).updateAnimation(interval);
+        gameObjects.forEach((k,v) ->{
+            for (GameObject g: v) {
+                if(g instanceof ImagePlane)
+                    ((ImagePlane)g).updateAnimation(interval);
+                g.update();
             }
-        }
+        });
         gameLogic.update(interval);
     }
 }

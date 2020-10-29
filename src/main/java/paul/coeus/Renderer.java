@@ -9,8 +9,14 @@ import paul.coeus.graphics.Material.Lights.DirectionalLight;
 import paul.coeus.graphics.Material.Lights.PointLight;
 import paul.coeus.graphics.graphUtils.Transformation;
 import paul.coeus.objects.Base.GameObject;
+import paul.coeus.objects.Base.ShaderHandler.BaseShaderHandler;
+import paul.coeus.objects.Base.ShaderHandler.IShaderHandler;
 import paul.coeus.utils.ShaderProgram;
 import paul.coeus.utils.Utils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -29,18 +35,35 @@ public class Renderer {
     private Transformation transformation;
     private ShaderProgram baseObjectShader;
     private  ShaderProgram lightObjectShader;
+
+    List<IShaderHandler> customShaders = new ArrayList<>();
+
     public Renderer(){
         specularPower = 0.1f;
         transformation = new Transformation();
     }
 
-    public void init(Window window) throws Exception{
+    public void init(Window window, List<IShaderHandler> shaderHandlers) throws Exception{
 
          setupBaseObjectShader();
          setupLightObjectShader();;
+         setupCustomShaders();
+
+        for (IShaderHandler shaderHandler: shaderHandlers) {
+            shaderHandler.setupUniforms();
+        }
+
          //      window.setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
     }
+
+    private void setupCustomShaders() throws Exception {
+        for(IShaderHandler shaderHandler : customShaders)
+        {
+            shaderHandler.setupUniforms();
+        }
+    }
+
     private void setupLightObjectShader() throws  Exception{
         lightObjectShader = new ShaderProgram();
         lightObjectShader.createVertexShader(Utils.loadResource("/shaders/Point_Light_Shader/vertex.vs"));
@@ -84,7 +107,7 @@ public class Renderer {
 
 
 
-    public void render(Window window, GameObject[] gameObjects, PointLight[] pointLights,Camera camera) {
+    public void render(Window window, HashMap<Class, List<GameObject>>gameObjects , List<IShaderHandler> shaders, PointLight[] pointLights, Camera camera) {
         clear();
         directionalLight.setAngel(directionalLight.getAngle()+0.9f);
 
@@ -96,53 +119,53 @@ public class Renderer {
         Matrix4f viewMatrix = transformation.getViewMatrix(camera);
 
         Matrix4f projectionMatrix = transformation.getProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
+        BaseShaderHandler x = new BaseShaderHandler();
 
-        RenderBaseObjects(viewMatrix, pointLights, window, gameObjects, projectionMatrix);
+        RenderLights(viewMatrix, pointLights, directionalLight, shaders);
+
+        // RenderBaseObjects(viewMatrix, pointLights, window, gameObjects.get(x.getClass()).toArray(new GameObject[gameObjects.get(x.getClass()).size()]), projectionMatrix);
+        RenderOtherObjects(viewMatrix, pointLights, window, gameObjects,shaders, projectionMatrix);
         RenderLightObjects(viewMatrix, pointLights, projectionMatrix);
     }
+
+    private void RenderOtherObjects(Matrix4f viewMatrix, PointLight[] pointLights, Window window, HashMap<Class, List<GameObject>> gameObjects,List<IShaderHandler> shaders, Matrix4f projectionMatrix) {
+        for (IShaderHandler shader: shaders) {
+            shader.getShaderProgram().bind();
+            shader.setGlobalUniforms(projectionMatrix);
+            List<GameObject> toRender= gameObjects.get(shader.getClass());
+
+            for (GameObject gameObject: toRender) {
+                gameObject.setLocalUniforms(shader.getShaderProgram(), viewMatrix, transformation);
+                gameObject.getMesh().render();
+            }
+
+            shader.getShaderProgram().unbind();
+        }
+    }
+
 
 
     public void RenderBaseObjects(Matrix4f viewMatrix, PointLight[] pointLights, Window window, GameObject[] gameObjects, Matrix4f projectionMatrix){
         baseObjectShader.bind();
-        RenderLights(viewMatrix, pointLights, directionalLight);
 
         baseObjectShader.setUniform("projectionMatrix", projectionMatrix);
         baseObjectShader.setUniform("texture_sampler", 0);
 
 
         // Draw the mesh
-        for (GameObject gameObject : gameObjects)
-        {
-            gameObject.setLocalUniforms(baseObjectShader, viewMatrix, transformation);
-            gameObject.getMesh().render();
+        for (GameObject gameObject : gameObjects) {
+                gameObject.setLocalUniforms(baseObjectShader, viewMatrix, transformation);                                                                      
+                gameObject.getMesh().render();
+        }                                                                                                                                                       
+        baseObjectShader.unbind();                                                                                                                              
+    }                                                                                                                                                           
+                                                                                                                                                                
+    public void RenderLights(Matrix4f viewMatrix,PointLight[] pointLights, DirectionalLight directionalLight, List<IShaderHandler> shaders){
+
+
+        for (IShaderHandler shaderHandler: shaders) {
+            shaderHandler.RenderLights(viewMatrix, pointLights, directionalLight, ambientLight, specularPower);
         }
-        baseObjectShader.unbind();
-    }
-
-    public void RenderLights(Matrix4f viewMatrix,PointLight[] pointLights, DirectionalLight directionalLight){
-
-        baseObjectShader.setUniform("ambientLight", ambientLight);
-        baseObjectShader.setUniform("specularPower", specularPower);
-
-        int numLights = pointLights != null ? pointLights.length : 0;
-        for (int i = 0; i < numLights; i++) {
-            // Get a copy of the point light object and transform its position to view coordinates
-            PointLight currPointLight = new PointLight(pointLights[i]);
-            Vector3f lightPos = currPointLight.getPosition();
-            Vector4f aux = new Vector4f(lightPos, 1);
-            aux.mul(viewMatrix);
-            lightPos.x = aux.x;
-            lightPos.y = aux.y;
-            lightPos.z = aux.z;
-            baseObjectShader.setUniform("pointLights", currPointLight, i);
-        }
-
-        // Get a copy of the directional light object and transform its position to view coordinates
-        DirectionalLight currDirLight = new DirectionalLight(directionalLight);
-        Vector4f dir = new Vector4f(currDirLight.getDirection(), 0);
-        dir.mul(viewMatrix);
-        currDirLight.setDirection(new Vector3f(dir.x, dir.y, dir.z));
-        baseObjectShader.setUniform("directionalLight", currDirLight);
     }
     public void RenderLightObjects(Matrix4f viewMatrix,PointLight[] pointLights, Matrix4f projectionMatrix)
     {

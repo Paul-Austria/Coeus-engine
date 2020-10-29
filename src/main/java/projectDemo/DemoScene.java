@@ -37,7 +37,7 @@ public class DemoScene implements IScene {
 
 
             // Mario
-            ImagePlane im = new ImagePlane(16,31, 100, false);
+            ImagePlane im = new ImagePlane(16,31, 100, true);
             im.setPosition(-0,-1.5f,2);
             try {
             Texture[] texturel = new Texture[]{
