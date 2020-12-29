@@ -32,6 +32,7 @@ public class BaseShaderHandler implements  IShaderHandler {
         shaderProgram.createUniform("projectionMatrix");
         shaderProgram.createUniform("modelViewMatrix");
         shaderProgram.createUniform("texture_sampler");
+        shaderProgram.createUniform("normalMap");
         // Create uniform for material
         shaderProgram.createMaterialUniform("material");
         // Create lighting related uniforms
@@ -46,6 +47,7 @@ public class BaseShaderHandler implements  IShaderHandler {
     public void setGlobalUniforms(Matrix4f projectionMatrix) {
         shaderProgram.setUniform("projectionMatrix", projectionMatrix);
         shaderProgram.setUniform("texture_sampler", 0);
+        shaderProgram.setUniform("normalMap", 1);
     }
 
     @Override

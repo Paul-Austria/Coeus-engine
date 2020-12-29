@@ -43,6 +43,7 @@ public class MouseInput {
         return displVec;
     }
 
+
     public void input(Window window) {
         displVec.x = 0;
         displVec.y = 0;

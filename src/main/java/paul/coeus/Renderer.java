@@ -119,7 +119,6 @@ public class Renderer {
         Matrix4f viewMatrix = transformation.getViewMatrix(camera);
 
         Matrix4f projectionMatrix = transformation.getProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
-        BaseShaderHandler x = new BaseShaderHandler();
 
         RenderLights(viewMatrix, pointLights, directionalLight, shaders);
 
@@ -132,7 +131,7 @@ public class Renderer {
         for (IShaderHandler shader: shaders) {
             shader.getShaderProgram().bind();
             shader.setGlobalUniforms(projectionMatrix);
-            List<GameObject> toRender= gameObjects.get(shader.getClass());
+            List<GameObject> toRender = gameObjects.get(shader.getClass());
 
             for (GameObject gameObject: toRender) {
                 gameObject.setLocalUniforms(shader.getShaderProgram(), viewMatrix, transformation);

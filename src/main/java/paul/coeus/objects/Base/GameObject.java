@@ -8,6 +8,9 @@ import paul.coeus.objects.Base.ShaderHandler.BaseShaderHandler;
 import paul.coeus.objects.Base.ShaderHandler.IShaderHandler;
 import paul.coeus.utils.ShaderProgram;
 
+/** Gameobject, has ability to be rendered
+ *
+ */
 public class GameObject {
     private Mesh mesh;
 
@@ -51,17 +54,32 @@ public class GameObject {
         return rotation;
     }
 
+    public IShaderHandler shaderHandler = new BaseShaderHandler();
+
+    /**
+     * sets rotation of object
+     * @param x
+     * @param y
+     * @param z
+     */
     public void setRotation(float x, float y, float z) {
         this.rotation.x = x;
         this.rotation.y = y;
         this.rotation.z = z;
     }
 
+    /**
+     * @param shaderProgram
+     * @param viewMatrix
+     * @param transformation
+     */
     public void setLocalUniforms(ShaderProgram shaderProgram, Matrix4f viewMatrix, Transformation transformation){
         Matrix4f modelViewMatrix = transformation.getModelViewMatrix(this, viewMatrix);
         shaderProgram.setUniform("modelViewMatrix", modelViewMatrix);
         shaderProgram.setUniform("material", getMesh().getMaterial());
     }
+
+
 
     public void update()
     {
@@ -76,7 +94,12 @@ public class GameObject {
         return mesh;
     }
 
+
+    public void setShaderHandler(IShaderHandler shaderHandler) {
+        this.shaderHandler = shaderHandler;
+    }
+
     public IShaderHandler getShader() {
-        return new BaseShaderHandler();
+        return shaderHandler;
     }
 }
