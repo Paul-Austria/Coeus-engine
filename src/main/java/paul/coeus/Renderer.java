@@ -20,6 +20,7 @@ import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
 
+
 public class Renderer {
 
     private static final float FOV = (float) Math.toRadians(60.0f);
