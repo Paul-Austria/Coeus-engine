@@ -11,8 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
-import static org.lwjgl.opengl.GL13.glActiveTexture;
+import static org.lwjgl.opengl.GL13.*;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
@@ -42,6 +41,10 @@ public class Mesh {
 
     public void setTexture(Texture texture) {
         this.material.setTexture(texture);
+    }
+    public void setNormal(Texture normal)
+    {
+        this.material.setNormalMap(normal);
     }
 
     public Material getMaterial() {
@@ -127,9 +130,21 @@ public class Mesh {
 
     public void render() {
         // Activate firs texture bank
-        glActiveTexture(GL_TEXTURE0);
+
         // Bind the texture
-        if(getTexture() != null)        glBindTexture(GL_TEXTURE_2D, getTexture().getId());
+        if(getTexture() != null)    {
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, getTexture().getId());
+        }
+
+
+        Texture normalMap = material.getNormalMap();
+        if ( normalMap != null ) {
+            // Activate first texture bank
+            glActiveTexture(GL_TEXTURE1);
+            // Bind the texture
+            glBindTexture(GL_TEXTURE_2D, normalMap.getId());
+        }
 
         // Draw the mesh
         glBindVertexArray(getVaoId());

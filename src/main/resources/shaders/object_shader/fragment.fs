@@ -1,9 +1,13 @@
 #version 330
 
+const int MAX_POINT_LIGHTS = 20;
+
+
 in vec2 outTexCoord;
 in vec3 mvVertexNormal;
 in vec3 mvVertexPos;
-const int MAX_POINT_LIGHTS = 20;
+in mat4 outModelViewMatrix;
+
 out vec4 fragColor;
 
 struct Attenuation
@@ -16,7 +20,6 @@ struct Attenuation
 struct PointLight
 {
     vec3 colour;
-    // Light position is assumed to be in view coordinates
     vec3 position;
     float intensity;
     Attenuation att;
@@ -36,10 +39,12 @@ struct Material
     vec4 diffuse;
     vec4 specular;
     int hasTexture;
+    int hasNormalMap;
     float reflectance;
 };
 
 uniform sampler2D texture_sampler;
+uniform sampler2D normalMap;
 uniform vec3 ambientLight;
 uniform float specularPower;
 uniform Material material;
@@ -104,11 +109,24 @@ vec4 calcDirectionalLight(DirectionalLight light, vec3 position, vec3 normal)
     return calcLightColour(light.colour, light.intensity, position, normalize(light.direction), normal);
 }
 
+vec3 calcNormal(Material material, vec3 normal, vec2 text_coord, mat4 modelViewMatrix)
+{
+    vec3 newNormal = normal;
+    if ( material.hasNormalMap == 1 )
+    {
+        newNormal = texture(normalMap, text_coord).rgb;
+        newNormal = normalize(newNormal * 2 - 1);
+        newNormal = normalize(modelViewMatrix * vec4(newNormal, 0.0)).xyz;
+    }
+    return newNormal;
+}
+
 void main()
 {
     setupColours(material, outTexCoord);
+    vec3 newNormal = calcNormal(material, mvVertexNormal, outTexCoord, outModelViewMatrix);
 
-    vec4 diffuseSpecularComp = calcDirectionalLight(directionalLight, mvVertexPos, mvVertexNormal);
+    vec4 diffuseSpecularComp = calcDirectionalLight(directionalLight, mvVertexPos, newNormal);
      for (int i=0; i<MAX_POINT_LIGHTS; i++)
         {
             if ( pointLights[i].intensity > 0 )
