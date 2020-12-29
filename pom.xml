@@ -12,6 +12,10 @@
         <lwjgl.version>3.2.3</lwjgl.version>
         <joml.version>1.9.25</joml.version>
     </properties>
+    <configuration>
+        <source>1.8</source>
+        <target>1.8</target>
+    </configuration>
 
     <profiles>
         <profile>
