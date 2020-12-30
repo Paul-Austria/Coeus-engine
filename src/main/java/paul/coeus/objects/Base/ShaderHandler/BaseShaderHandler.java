@@ -14,7 +14,7 @@ public class BaseShaderHandler implements  IShaderHandler {
 
     @Override
     public Class getClassType() {
-        return GameObject.class;
+        return BaseShaderHandler.class;
     }
     @Override
     public ShaderProgram getShaderProgram() {
@@ -57,6 +57,7 @@ public class BaseShaderHandler implements  IShaderHandler {
 
         shaderProgram.setUniform("ambientLight", ambientLight);
         shaderProgram.setUniform("specularPower", specularPower);
+
 
         int numLights = pointLights != null ? pointLights.length : 0;
         for (int i = 0; i < numLights; i++) {

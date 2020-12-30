@@ -3,6 +3,7 @@ package paul.coeus.base;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
+import paul.coeus.GlobalModules;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
@@ -45,6 +46,7 @@ public class Window {
 
         // Create the window
         windowHandle = glfwCreateWindow(width, height, title, NULL, NULL);
+        GlobalModules.setWindow(this);
         if (windowHandle == NULL) {
             throw new RuntimeException("Failed to create the GLFW window");
         }

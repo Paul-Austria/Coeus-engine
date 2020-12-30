@@ -14,11 +14,11 @@ import paul.coeus.utils.ShaderProgram;
 public class GameObject {
     private Mesh mesh;
 
-    private final Vector3f position;
+    private  Vector3f position;
 
     private float scale;
 
-    private final Vector3f rotation;
+    private  Vector3f rotation;
 
     public GameObject(){
         position = new Vector3f(0, 0, 0);
@@ -101,5 +101,9 @@ public class GameObject {
 
     public IShaderHandler getShader() {
         return shaderHandler;
+    }
+
+    protected void setPosition(Vector3f position) {
+        this.position = position;
     }
 }

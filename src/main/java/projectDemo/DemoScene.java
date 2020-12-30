@@ -10,6 +10,8 @@ import paul.coeus.graphics.Mesh;
 import paul.coeus.graphics.Material.Animation;
 import paul.coeus.graphics.Material.Texture;
 import paul.coeus.objects.Base.GameObject;
+import paul.coeus.objects.Base.ShaderHandler.SkyBoxShaderHandler;
+import paul.coeus.objects.Base.SkyBox;
 import paul.coeus.objects.ImagePlane;
 import paul.coeus.utils.LoadObjects;
 
@@ -29,7 +31,12 @@ public class DemoScene implements IScene {
             gameObject1.setRotation(0, 0, 0);;
             gameObject1.setScale(10);
             gameObject1.setPosition(10,-3,0);
+;
             engine.addGameObject(gameObject1);
+
+
+
+
 
         PointLight[] pointLights = new  PointLight[]{
                 new PointLight(new Vector3f(1, 1, 1),new Vector3f(10, -2, 5), 1f )

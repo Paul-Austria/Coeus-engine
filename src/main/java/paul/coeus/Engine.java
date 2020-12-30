@@ -8,6 +8,8 @@ import paul.coeus.graphics.Material.Lights.PointLight;
 import paul.coeus.objects.Base.GameObject;
 import paul.coeus.objects.Base.ShaderHandler.BaseShaderHandler;
 import paul.coeus.objects.Base.ShaderHandler.IShaderHandler;
+import paul.coeus.objects.Base.ShaderHandler.SkyBoxShaderHandler;
+import paul.coeus.objects.Base.SkyBox;
 import paul.coeus.objects.ImagePlane;
 import paul.coeus.utils.IO.MouseInput;
 import paul.coeus.utils.ShaderProgram;
@@ -33,7 +35,7 @@ public class Engine extends Thread {
     private List<IShaderHandler> shaders;
     private List<PointLight> pointLightList;
     private PointLight[] pointLights;
-
+    private SkyBox skyBox;
 
     public Engine(String title, int width, int height, boolean vSync, IGameLogic gameLogic)
     {
@@ -47,6 +49,7 @@ public class Engine extends Thread {
         timer = new Timer();
         renderer = new Renderer();
         camera = new Camera();
+        GlobalModules.setCamera(camera);
     }
 
     @Override
@@ -63,12 +66,24 @@ public class Engine extends Thread {
 
     }
 
+
+    public void setSkyBox(String texture)
+    {
+        skyBox =  new SkyBox(texture);
+        addGameObject(skyBox);
+        addShader(new SkyBoxShaderHandler());
+    }
+
     protected void init() throws Exception {
         timer.init();
         gameLogic.init(window,this);
         window.init();
         renderer.init(window, shaders);
         gameLogic.lateInit();
+
+        skyBox =  new SkyBox("src/main/Texture/skybox.png");
+        addGameObject(skyBox);
+        addShader(new SkyBoxShaderHandler());
     }
 
     public void clearGameObject()
@@ -90,6 +105,7 @@ public class Engine extends Thread {
         else if(!gameObjects.get(gameObject.getShader().getClass()).contains(gameObject))
         {
             gameObjects.get(gameObject.getShader().getClass()).add(gameObject);
+            return true;
         }
         return false;
     }
@@ -108,6 +124,11 @@ public class Engine extends Thread {
     public void addShader(IShaderHandler shaderHandler)
     {
         shaders.add(shaderHandler);
+        try {
+            renderer.setupShaders(shaders);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     public void removeShader(IShaderHandler shaderHandler)
     {

@@ -45,17 +45,19 @@ public class Renderer {
     }
 
     public void init(Window window, List<IShaderHandler> shaderHandlers) throws Exception{
-
-         setupBaseObjectShader();
-         setupLightObjectShader();;
-         setupCustomShaders();
-
-        for (IShaderHandler shaderHandler: shaderHandlers) {
-            shaderHandler.setupUniforms();
-        }
+        setupBaseObjectShader();
+        setupLightObjectShader();;
+        setupCustomShaders();
+        setupShaders(shaderHandlers);
 
          //      window.setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
+    }
+
+    public void setupShaders(List<IShaderHandler> shaderHandlers) throws Exception {
+        for (IShaderHandler shaderHandler: shaderHandlers) {
+            shaderHandler.setupUniforms();
+        }
     }
 
     private void setupCustomShaders() throws Exception {
@@ -123,7 +125,6 @@ public class Renderer {
 
         RenderLights(viewMatrix, pointLights, directionalLight, shaders);
 
-        // RenderBaseObjects(viewMatrix, pointLights, window, gameObjects.get(x.getClass()).toArray(new GameObject[gameObjects.get(x.getClass()).size()]), projectionMatrix);
         RenderOtherObjects(viewMatrix, pointLights, window, gameObjects,shaders, projectionMatrix);
         RenderLightObjects(viewMatrix, pointLights, projectionMatrix);
     }
