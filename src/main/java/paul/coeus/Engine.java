@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static org.lwjgl.glfw.GLFW.glfwSetFramebufferSizeCallback;
+
 public class Engine extends Thread {
     private Window window;
     private IGameLogic gameLogic;
@@ -78,6 +80,9 @@ public class Engine extends Thread {
         timer.init();
         gameLogic.init(window,this);
         window.init();
+
+
+
         renderer.init(window, shaders);
         gameLogic.lateInit();
 

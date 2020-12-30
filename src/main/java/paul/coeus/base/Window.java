@@ -17,6 +17,7 @@ public class Window {
     private long windowHandle;
     private boolean resized;
     private boolean vSync;
+    private boolean debugMode = false;
 
     public Window(String title, int width, int height, boolean vSync) {
         this.title = title;
@@ -51,6 +52,12 @@ public class Window {
             throw new RuntimeException("Failed to create the GLFW window");
         }
 
+
+        glfwSetFramebufferSizeCallback(windowHandle, (window, width, height) -> {
+            Window.this.width = width;
+            Window.this.height = height;
+            Window.this.setResized(true);
+        });
         // Setup a key callback. It will be called every time a key is pressed, repeated or released.
         glfwSetKeyCallback(windowHandle, (window, key, scancode, action, mods) -> {
             if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
@@ -87,7 +94,23 @@ public class Window {
 
 
         glEnable(GL_DEPTH_TEST);
-        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);  // this tells it to only render lines
+
+        glfwSetKeyCallback(windowHandle, (window, key, scancode, action, mods) -> {
+            if (key == GLFW_KEY_F12 && action == GLFW_RELEASE) {
+                debugMode = !debugMode;
+                if(debugMode)
+                {
+                    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);  // this tells it to only render lines
+
+                }
+                else {
+                    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);  // this tells it to only render lines
+
+                }
+            }
+        });
+
+
     }
 
     public void update(){
@@ -102,6 +125,7 @@ public class Window {
     public boolean windowShouldClose() {
         return glfwWindowShouldClose(windowHandle);
     }
+
 
 
     public int getWidth() {
