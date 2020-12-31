@@ -3,7 +3,6 @@ package paul.coeus;
 import paul.coeus.base.IGameLogic;
 import paul.coeus.base.Window;
 import paul.coeus.graphics.Camera;
-import paul.coeus.graphics.Material.Animation;
 import paul.coeus.graphics.Material.Lights.PointLight;
 import paul.coeus.objects.Base.GameObject;
 import paul.coeus.objects.Base.ShaderHandler.BaseShaderHandler;
@@ -19,7 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static org.lwjgl.glfw.GLFW.glfwSetFramebufferSizeCallback;
+import static org.lwjgl.glfw.GLFW.*;
 
 public class Engine extends Thread {
     private Window window;
@@ -63,11 +62,28 @@ public class Engine extends Thread {
             excp.printStackTrace();
         }
         finally {
-            System.out.println("Not Implemented");
+            cleanUp();
         }
 
     }
 
+
+    private void cleanUp(){
+
+        window.destroyUIStuff();
+        renderer.cleanup();
+        cleanUpShaders();
+
+        glfwDestroyWindow(window.getWindowHandle());
+        glfwTerminate();
+    }
+
+    private void cleanUpShaders(){
+        for (IShaderHandler sh:
+             shaders) {
+            sh.getShaderProgram().cleanup();
+        }
+    }
 
     public void setSkyBox(String texture)
     {
@@ -93,6 +109,7 @@ public class Engine extends Thread {
 
     public void clearGameObject()
     {
+        window.getFrame().getContainer().clearChildComponents();
         gameObjects.clear();
         gameObjectArray = new GameObject[0];
         pointLightList.clear();

@@ -79,7 +79,26 @@
         </dependencies>
     </dependencyManagement>
 
+    <repositories>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
+        <repository>
+            <id>releases</id>
+            <url>https://raw.github.com/SpinyOwl/repo/releases</url>
+        </repository>
+    </repositories>
+
+
+
     <dependencies>
+
+        <dependency>
+            <groupId>org.liquidengine</groupId>
+            <artifactId>legui</artifactId>
+            <version>3.2.3</version>
+        </dependency>
 
         <dependency>
             <groupId>org.l33tlabs.twl</groupId>

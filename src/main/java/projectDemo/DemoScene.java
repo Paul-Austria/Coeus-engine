@@ -2,7 +2,14 @@ package projectDemo;
 
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+import org.liquidengine.legui.component.Button;
+import org.liquidengine.legui.event.MouseClickEvent;
+import org.liquidengine.legui.listener.MouseClickEventListener;
+import org.liquidengine.legui.style.Style;
+import org.liquidengine.legui.style.border.SimpleLineBorder;
+import org.liquidengine.legui.style.color.ColorConstants;
 import paul.coeus.Engine;
+import paul.coeus.GlobalModules;
 import paul.coeus.base.IGameLogic;
 import paul.coeus.base.IScene;
 import paul.coeus.graphics.Material.Lights.PointLight;
@@ -15,8 +22,26 @@ import paul.coeus.objects.Base.SkyBox;
 import paul.coeus.objects.ImagePlane;
 import paul.coeus.utils.LoadObjects;
 
+import java.awt.*;
+
 public class DemoScene implements IScene {
     IGameLogic gameLogic;
+    int i;
+
+    @Override
+    public void setupUI() {
+        Button button = new Button("Add components", 20, 20, 160, 30);
+
+        button.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) event -> {
+            if(button.isPressed()) {
+                i++;
+                System.out.println("Button pressed" + i);
+            }});
+
+
+        GlobalModules.getWindow().getFrame().getContainer().add(button);
+    }
+
     @Override
     public void init(IGameLogic gameLogic) throws Exception {
         this.gameLogic = gameLogic;

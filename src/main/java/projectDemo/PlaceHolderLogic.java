@@ -86,11 +86,14 @@ public class PlaceHolderLogic implements IGameLogic {
         startNewScene(new DemoScene());
     }
 
+
+
     @Override
     public void startNewScene(IScene scene) {
         try {
             engine.clearGameObject();
             scene.init(this);
+            scene.setupUI();
             currentScene = scene;
         } catch (Exception e) {
             e.printStackTrace();

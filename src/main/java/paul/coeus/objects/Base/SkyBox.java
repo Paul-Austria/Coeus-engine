@@ -18,7 +18,8 @@ public class SkyBox extends GameObject {
         super();
         this.setShaderHandler(new SkyBoxShaderHandler());
         try {
-            Mesh skyBoxMesh = LoadObjects.loadOBJFromString("// Front Face\n" +
+            Mesh skyBoxMesh = LoadObjects.loadOBJFromString(
+                    "// Front Face\n" +
                     "v -1.000000 1.000000 1.000000\n" +
                     "v -1.000000 -1.000000 1.000000\n" +
                     "v 1.000000 -1.000000 1.000000\n" +

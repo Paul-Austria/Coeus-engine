@@ -1,9 +1,30 @@
 package paul.coeus.base;
 
+import org.joml.Vector2f;
+import org.joml.Vector2i;
+import org.liquidengine.legui.animation.AnimatorProvider;
+import org.liquidengine.legui.component.Button;
+import org.liquidengine.legui.component.Frame;
+import org.liquidengine.legui.event.CursorEnterEvent;
+import org.liquidengine.legui.event.MouseClickEvent;
+import org.liquidengine.legui.listener.CursorEnterEventListener;
+import org.liquidengine.legui.listener.MouseClickEventListener;
+import org.liquidengine.legui.listener.processor.EventProcessorProvider;
+import org.liquidengine.legui.style.border.SimpleLineBorder;
+import org.liquidengine.legui.style.color.ColorConstants;
+import org.liquidengine.legui.system.context.CallbackKeeper;
+import org.liquidengine.legui.system.context.Context;
+import org.liquidengine.legui.system.context.DefaultCallbackKeeper;
+import org.liquidengine.legui.system.handler.processor.SystemEventProcessor;
+import org.liquidengine.legui.system.handler.processor.SystemEventProcessorImpl;
+import org.liquidengine.legui.system.layout.LayoutManager;
+import org.liquidengine.legui.system.renderer.Renderer;
+import org.liquidengine.legui.system.renderer.nvg.NvgRenderer;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import paul.coeus.GlobalModules;
+
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
@@ -18,6 +39,12 @@ public class Window {
     private boolean resized;
     private boolean vSync;
     private boolean debugMode = false;
+    private Renderer UIRenderer;
+
+    SystemEventProcessor systemEventProcessor;
+    CallbackKeeper keeper;
+    Frame frame;
+    Context UIContext;
 
     public Window(String title, int width, int height, boolean vSync) {
         this.title = title;
@@ -26,7 +53,11 @@ public class Window {
         this.vSync = vSync;
     }
 
+
+
+
     public void init(){
+
         GLFWErrorCallback.createPrint(System.err).set();
 
         // Initialize GLFW. Most GLFW functions will not work before doing this.
@@ -53,11 +84,15 @@ public class Window {
         }
 
 
-        glfwSetFramebufferSizeCallback(windowHandle, (window, width, height) -> {
-            Window.this.width = width;
-            Window.this.height = height;
-            Window.this.setResized(true);
-        });
+        //UI CALLBACKS
+        keeper = new DefaultCallbackKeeper();
+        CallbackKeeper.registerCallbacks(this.windowHandle, keeper);
+
+        systemEventProcessor = new SystemEventProcessorImpl();
+        SystemEventProcessor.addDefaultCallbacks(keeper, systemEventProcessor);
+
+
+
         // Setup a key callback. It will be called every time a key is pressed, repeated or released.
         glfwSetKeyCallback(windowHandle, (window, key, scancode, action, mods) -> {
             if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
@@ -94,6 +129,17 @@ public class Window {
 
 
         glEnable(GL_DEPTH_TEST);
+        
+        
+
+
+
+        glfwSetFramebufferSizeCallback(windowHandle, (window, width, height) -> {
+            Window.this.width = width;
+            Window.this.height = height;
+            this.frame.setSize(new Vector2f(width, height));
+            Window.this.setResized(true);
+        });
 
         glfwSetKeyCallback(windowHandle, (window, key, scancode, action, mods) -> {
             if (key == GLFW_KEY_F12 && action == GLFW_RELEASE) {
@@ -104,18 +150,49 @@ public class Window {
 
                 }
                 else {
-                    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);  // this tells it to only render lines
+                    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
                 }
             }
         });
 
 
+        setupUI();
+
+    }
+
+    private void setupUI() {
+
+        UIContext = new Context(this.getWindowHandle());
+        UIRenderer = new NvgRenderer();
+        UIRenderer.initialize();
+        frame = new Frame(this.width, this.height);
+
+
+
+        frame.getContainer().setFocusable(false);
+    }
+
+    int i = 0;
+
+
+    public void destroyUIStuff(){
+        UIRenderer.destroy();
     }
 
     public void update(){
+        UIContext.updateGlfwWindow();
+        UIRenderer.render(frame, UIContext);
+
         glfwSwapBuffers(windowHandle);
         glfwPollEvents();
+
+        systemEventProcessor.processEvents(frame, UIContext);
+        EventProcessorProvider.getInstance().processEvents();
+
+        LayoutManager.getInstance().layout(frame);
+
+        AnimatorProvider.getAnimator().runAnimations();
     }
 
     public String getTitle() {
@@ -127,10 +204,14 @@ public class Window {
     }
 
 
+    public Frame getFrame() {
+        return frame;
+    }
 
     public int getWidth() {
         return width;
     }
+
 
     public int getHeight() {
         return height;
