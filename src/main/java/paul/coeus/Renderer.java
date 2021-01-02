@@ -8,8 +8,8 @@ import paul.coeus.graphics.Camera;
 import paul.coeus.graphics.Material.Lights.DirectionalLight;
 import paul.coeus.graphics.Material.Lights.PointLight;
 import paul.coeus.graphics.graphUtils.Transformation;
+import paul.coeus.graphics.postProcessing.FBO;
 import paul.coeus.objects.Base.GameObject;
-import paul.coeus.objects.Base.ShaderHandler.BaseShaderHandler;
 import paul.coeus.objects.Base.ShaderHandler.IShaderHandler;
 import paul.coeus.utils.ShaderProgram;
 import paul.coeus.utils.Utils;
@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER;
+import static org.lwjgl.opengl.GL30.glBindFramebuffer;
 
 
 public class Renderer {
@@ -38,7 +40,6 @@ public class Renderer {
     private  ShaderProgram lightObjectShader;
 
     List<IShaderHandler> customShaders = new ArrayList<>();
-
     public Renderer(){
         specularPower = 0.1f;
         transformation = new Transformation();
@@ -49,8 +50,7 @@ public class Renderer {
         setupLightObjectShader();;
         setupCustomShaders();
         setupShaders(shaderHandlers);
-
-         //      window.setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        GlobalModules.setFbo(new FBO());         //      window.setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
     }
 
@@ -125,22 +125,36 @@ public class Renderer {
 
         RenderLights(viewMatrix, pointLights, directionalLight, shaders);
 
+
+
+        glBindFramebuffer(GL_FRAMEBUFFER, GlobalModules.getFbo().getId());
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
         RenderOtherObjects(viewMatrix, pointLights, window, gameObjects,shaders, projectionMatrix);
         RenderLightObjects(viewMatrix, pointLights, projectionMatrix);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
     }
 
     private void RenderOtherObjects(Matrix4f viewMatrix, PointLight[] pointLights, Window window, HashMap<Class, List<GameObject>> gameObjects,List<IShaderHandler> shaders, Matrix4f projectionMatrix) {
         for (IShaderHandler shader: shaders) {
-            shader.getShaderProgram().bind();
-            shader.setGlobalUniforms(projectionMatrix);
-            List<GameObject> toRender = gameObjects.get(shader.getClass());
+            if(gameObjects.get(shader.getClass()) != null) {
+                shader.getShaderProgram().bind();
+                shader.setGlobalUniforms(projectionMatrix);
+                List<GameObject> toRender = gameObjects.get(shader.getClass());
 
-            for (GameObject gameObject: toRender) {
-                gameObject.setLocalUniforms(shader.getShaderProgram(), viewMatrix, transformation);
-                gameObject.getMesh().render();
+                for (GameObject gameObject : toRender) {
+
+                    if(gameObject.isVisible()){
+                        gameObject.setLocalUniforms(shader.getShaderProgram(), viewMatrix, transformation);
+                        gameObject.getMesh().render();
+                    }
+                }
+
+                shader.getShaderProgram().unbind();
             }
-
-            shader.getShaderProgram().unbind();
         }
     }
 

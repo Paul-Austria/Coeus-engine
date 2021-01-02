@@ -1,33 +1,30 @@
 package projectDemo;
 
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.liquidengine.legui.component.Button;
+import org.liquidengine.legui.component.ImageView;
 import org.liquidengine.legui.event.MouseClickEvent;
+import org.liquidengine.legui.image.FBOImage;
 import org.liquidengine.legui.listener.MouseClickEventListener;
 import org.liquidengine.legui.style.Style;
-import org.liquidengine.legui.style.border.SimpleLineBorder;
-import org.liquidengine.legui.style.color.ColorConstants;
 import paul.coeus.Engine;
 import paul.coeus.GlobalModules;
 import paul.coeus.base.IGameLogic;
 import paul.coeus.base.IScene;
 import paul.coeus.graphics.Material.Lights.PointLight;
 import paul.coeus.graphics.Mesh;
-import paul.coeus.graphics.Material.Animation;
 import paul.coeus.graphics.Material.Texture;
 import paul.coeus.objects.Base.GameObject;
-import paul.coeus.objects.Base.ShaderHandler.SkyBoxShaderHandler;
-import paul.coeus.objects.Base.SkyBox;
-import paul.coeus.objects.ImagePlane;
 import paul.coeus.utils.LoadObjects;
 
 import java.awt.*;
 
 public class DemoScene implements IScene {
     IGameLogic gameLogic;
-    int i;
 
+    int i;
     @Override
     public void setupUI() {
         Button button = new Button("Add components", 20, 20, 160, 30);
@@ -39,13 +36,25 @@ public class DemoScene implements IScene {
             }});
 
 
+        ImageView imageView = new ImageView(new FBOImage(GlobalModules.getFbo().getTexture().getId(),GlobalModules.getWindow().getWidth(), GlobalModules.getWindow().getHeight()));
+        imageView.setPosition(10, 10);
+        imageView.getStyle().setPosition(Style.PositionType.RELATIVE);
+        imageView.getStyle().getFlexStyle().setFlexGrow(1);
+        imageView.getStyle().setMargin(10f);
+        imageView.setSize(new Vector2f(GlobalModules.getWindow().getWidth(), GlobalModules.getWindow().getHeight()));
+        imageView.getStyle().setMinimumSize(350, 350);
+
+
+        GlobalModules.getWindow().getFrame().getContainer().add(imageView);
         GlobalModules.getWindow().getFrame().getContainer().add(button);
     }
 
     @Override
     public void init(IGameLogic gameLogic) throws Exception {
+
         this.gameLogic = gameLogic;
         Engine engine = gameLogic.getEngine();
+
 
             Mesh m2 = LoadObjects.loadOBJ("src/main/Objects/quad.obj");
             m2.setTexture(new Texture("src/main/Texture/Rock/rock.png"));

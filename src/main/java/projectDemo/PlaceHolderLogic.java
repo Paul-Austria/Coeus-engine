@@ -84,6 +84,7 @@ public class PlaceHolderLogic implements IGameLogic {
     @Override
     public void lateInit() {
         startNewScene(new DemoScene());
+
     }
 
 

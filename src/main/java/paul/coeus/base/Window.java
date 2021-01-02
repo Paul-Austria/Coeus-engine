@@ -181,8 +181,7 @@ public class Window {
     }
 
     public void update(){
-        UIContext.updateGlfwWindow();
-        UIRenderer.render(frame, UIContext);
+
 
         glfwSwapBuffers(windowHandle);
         glfwPollEvents();
@@ -193,6 +192,12 @@ public class Window {
         LayoutManager.getInstance().layout(frame);
 
         AnimatorProvider.getAnimator().runAnimations();
+    }
+
+
+    public void renderUI(){
+        UIContext.updateGlfwWindow();
+        UIRenderer.render(frame, UIContext);
     }
 
     public String getTitle() {

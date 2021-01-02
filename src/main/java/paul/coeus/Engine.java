@@ -11,7 +11,6 @@ import paul.coeus.objects.Base.ShaderHandler.SkyBoxShaderHandler;
 import paul.coeus.objects.Base.SkyBox;
 import paul.coeus.objects.ImagePlane;
 import paul.coeus.utils.IO.MouseInput;
-import paul.coeus.utils.ShaderProgram;
 import paul.coeus.utils.Timer;
 
 import java.util.ArrayList;
@@ -37,6 +36,7 @@ public class Engine extends Thread {
     private List<PointLight> pointLightList;
     private PointLight[] pointLights;
     private SkyBox skyBox;
+
 
     public Engine(String title, int width, int height, boolean vSync, IGameLogic gameLogic)
     {
@@ -94,17 +94,21 @@ public class Engine extends Thread {
 
     protected void init() throws Exception {
         timer.init();
-        gameLogic.init(window,this);
+
         window.init();
-
-
-
         renderer.init(window, shaders);
-        gameLogic.lateInit();
-
         skyBox =  new SkyBox("src/main/Texture/skybox.png");
         addGameObject(skyBox);
         addShader(new SkyBoxShaderHandler());
+
+        gameLogic.init(window,this);
+
+
+
+
+        gameLogic.lateInit();
+
+
     }
 
     public void clearGameObject()
@@ -176,6 +180,9 @@ public class Engine extends Thread {
         return false;
     }
 
+    public void setSkyBoxVisibility(boolean t){
+        skyBox.setVisible(t);
+    }
 
     protected void gameLoop(){
         float elapsedTime;
@@ -194,7 +201,6 @@ public class Engine extends Thread {
             }
 
             render();
-
             if (!window.isvSync()) {
                 sync();
             }
@@ -202,9 +208,12 @@ public class Engine extends Thread {
     }
 
     private void render(){
+
         renderer.render(window,gameObjects,shaders,pointLights,camera);
+        window.renderUI();
         window.update();
     }
+
 
     private void sync() {
         float loopSlot = 1f / TARGET_FPS;

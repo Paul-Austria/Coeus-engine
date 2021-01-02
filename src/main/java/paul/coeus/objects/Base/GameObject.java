@@ -20,6 +20,8 @@ public class GameObject {
 
     private  Vector3f rotation;
 
+    private boolean visible = true;
+
     public GameObject(){
         position = new Vector3f(0, 0, 0);
         scale = 1;
@@ -66,6 +68,15 @@ public class GameObject {
         this.rotation.x = x;
         this.rotation.y = y;
         this.rotation.z = z;
+    }
+
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
 
     /**
