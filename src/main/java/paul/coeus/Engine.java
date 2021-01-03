@@ -87,6 +87,7 @@ public class Engine extends Thread {
 
     public void setSkyBox(String texture)
     {
+        removeGameObject(skyBox);
         skyBox =  new SkyBox(texture);
         addGameObject(skyBox);
         addShader(new SkyBoxShaderHandler());

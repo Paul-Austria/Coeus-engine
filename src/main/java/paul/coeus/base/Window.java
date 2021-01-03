@@ -24,6 +24,7 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import paul.coeus.GlobalModules;
+import paul.coeus.graphics.postProcessing.FBO;
 
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -52,6 +53,8 @@ public class Window {
         this.height = height;
         this.vSync = vSync;
     }
+
+
 
 
 
@@ -125,12 +128,12 @@ public class Window {
 
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable( GL_BLEND );
-        glEnable(GL_MULTISAMPLE);
-
-
+        glDepthFunc(GL_LEQUAL);
+        glDepthRange(0.0f, 1.0f);
         glEnable(GL_DEPTH_TEST);
-        
-        
+
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
 
 
 
@@ -138,6 +141,11 @@ public class Window {
             Window.this.width = width;
             Window.this.height = height;
             this.frame.setSize(new Vector2f(width, height));
+            try {
+                GlobalModules.setFbo(new FBO());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             Window.this.setResized(true);
         });
 
@@ -163,7 +171,7 @@ public class Window {
 
     private void setupUI() {
 
-        UIContext = new Context(this.getWindowHandle());
+       UIContext = new Context(this.getWindowHandle());
         UIRenderer = new NvgRenderer();
         UIRenderer.initialize();
         frame = new Frame(this.width, this.height);
@@ -180,13 +188,22 @@ public class Window {
         UIRenderer.destroy();
     }
 
+
+    public boolean isDebugMode() {
+        return debugMode;
+    }
+
+    public void setDebugMode(boolean debugMode) {
+        this.debugMode = debugMode;
+    }
+
     public void update(){
 
 
         glfwSwapBuffers(windowHandle);
         glfwPollEvents();
 
-        systemEventProcessor.processEvents(frame, UIContext);
+    //    systemEventProcessor.processEvents(frame, UIContext);
         EventProcessorProvider.getInstance().processEvents();
 
         LayoutManager.getInstance().layout(frame);

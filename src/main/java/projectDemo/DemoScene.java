@@ -23,6 +23,7 @@ import java.awt.*;
 
 public class DemoScene implements IScene {
     IGameLogic gameLogic;
+    GameObject gameObject;
 
     int i;
     @Override
@@ -34,41 +35,42 @@ public class DemoScene implements IScene {
                 i++;
                 System.out.println("Button pressed" + i);
             }});
-
-
-        ImageView imageView = new ImageView(new FBOImage(GlobalModules.getFbo().getTexture().getId(),GlobalModules.getWindow().getWidth(), GlobalModules.getWindow().getHeight()));
-        imageView.setPosition(10, 10);
-        imageView.getStyle().setPosition(Style.PositionType.RELATIVE);
-        imageView.getStyle().getFlexStyle().setFlexGrow(1);
-        imageView.getStyle().setMargin(10f);
-        imageView.setSize(new Vector2f(GlobalModules.getWindow().getWidth(), GlobalModules.getWindow().getHeight()));
-        imageView.getStyle().setMinimumSize(350, 350);
-
-
-        GlobalModules.getWindow().getFrame().getContainer().add(imageView);
         GlobalModules.getWindow().getFrame().getContainer().add(button);
     }
 
     @Override
     public void init(IGameLogic gameLogic) throws Exception {
 
+
+
         this.gameLogic = gameLogic;
         Engine engine = gameLogic.getEngine();
 
-
-            Mesh m2 = LoadObjects.loadOBJ("src/main/Objects/quad.obj");
-            m2.setTexture(new Texture("src/main/Texture/Rock/rock.png"));
-            m2.setNormal(new Texture("src/main/Texture/Rock/rock_normals.png"));
-            m2.getMaterial().setAmbientC(new Vector4f(1,0,0,1));
-            m2.getMaterial().setReflectance(0.1f);
-            GameObject gameObject1 = new GameObject(m2);
-            gameObject1.setRotation(0, 0, 0);;
-            gameObject1.setScale(10);
-            gameObject1.setPosition(10,-3,0);
-;
-            engine.addGameObject(gameObject1);
+        Mesh m = LoadObjects.loadOBJ("src/main/Objects/test.obj");
+        m.setTexture(new Texture("src/main/Texture/grassblock.png"));
+        m.getMaterial().setAmbientC(new Vector4f(1,0,0,1));
+        gameObject = new GameObject(m);
+        gameObject.getMesh().getMaterial().setReflectance(0.1f);
+        engine.addGameObject(gameObject);
+        gameObject.setPosition(0,0,-1);
 
 
+        GameObject gameObject2 = new GameObject(m);
+        gameObject2.getMesh().getMaterial().setReflectance(0.1f);
+        engine.addGameObject(gameObject2);
+        gameObject.setPosition(0,2,-1);
+     //   engine.setSkyBox("src/main/Texture/skybox.png");
+
+        Mesh m2 = LoadObjects.loadOBJ("src/main/Objects/quad.obj");
+        m2.setTexture(new Texture("src/main/Texture/Rock/rock.png"));
+        m2.setNormal(new Texture("src/main/Texture/Rock/rock_normals.png"));
+        m2.getMaterial().setAmbientC(new Vector4f(1,0,0,1));
+        m2.getMaterial().setReflectance(0.1f);
+        GameObject gameObject1 = new GameObject(m2);
+        gameObject1.setRotation(0, 0, 0);;
+        gameObject1.setScale(10);
+        gameObject1.setPosition(10,-3,0);
+        engine.addGameObject(gameObject1);
 
 
 
@@ -88,5 +90,8 @@ public class DemoScene implements IScene {
 
     @Override
     public void update(float interval) {
+        gameObject.getRotation().x += 0.5;
+        gameObject.getRotation().y += 0.5;
+        gameObject.getRotation().z += 0.5;
     }
 }

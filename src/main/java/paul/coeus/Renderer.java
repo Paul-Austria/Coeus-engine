@@ -128,14 +128,33 @@ public class Renderer {
 
 
         glBindFramebuffer(GL_FRAMEBUFFER, GlobalModules.getFbo().getId());
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         RenderOtherObjects(viewMatrix, pointLights, window, gameObjects,shaders, projectionMatrix);
         RenderLightObjects(viewMatrix, pointLights, projectionMatrix);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        if(window.isDebugMode() )
+        {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
+        }
+        renderFBO(projectionMatrix);
+        if(window.isDebugMode())
+        {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
+        }
+    }
+
+    private void renderFBO(Matrix4f projectionMatrix ) {
+        GlobalModules.getFbo().getShaderHandler().getShaderProgram().bind();
+
+        GlobalModules.getFbo().getShaderHandler().setGlobalUniforms(projectionMatrix);
+
+        GlobalModules.getFbo().render();
+
+        GlobalModules.getFbo().getShaderHandler().getShaderProgram().unbind();
     }
 
     private void RenderOtherObjects(Matrix4f viewMatrix, PointLight[] pointLights, Window window, HashMap<Class, List<GameObject>> gameObjects,List<IShaderHandler> shaders, Matrix4f projectionMatrix) {
@@ -158,22 +177,6 @@ public class Renderer {
         }
     }
 
-
-
-    public void RenderBaseObjects(Matrix4f viewMatrix, PointLight[] pointLights, Window window, GameObject[] gameObjects, Matrix4f projectionMatrix){
-        baseObjectShader.bind();
-
-        baseObjectShader.setUniform("projectionMatrix", projectionMatrix);
-        baseObjectShader.setUniform("texture_sampler", 0);
-
-
-        // Draw the mesh
-        for (GameObject gameObject : gameObjects) {
-                gameObject.setLocalUniforms(baseObjectShader, viewMatrix, transformation);                                                                      
-                gameObject.getMesh().render();
-        }                                                                                                                                                       
-        baseObjectShader.unbind();                                                                                                                              
-    }                                                                                                                                                           
                                                                                                                                                                 
     public void RenderLights(Matrix4f viewMatrix,PointLight[] pointLights, DirectionalLight directionalLight, List<IShaderHandler> shaders){
 
