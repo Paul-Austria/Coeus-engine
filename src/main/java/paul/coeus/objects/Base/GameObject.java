@@ -97,6 +97,18 @@ public class GameObject {
 
     }
 
+
+    @Override
+    public String toString() {
+        return "GameObject{" +
+                "mesh=" + mesh +
+                ", position=" + position +
+                ", scale=" + scale +
+                ", rotation=" + rotation +
+                ", visible=" + visible +
+                '}';
+    }
+
     public void setMesh(Mesh mesh) {
         this.mesh = mesh;
     }

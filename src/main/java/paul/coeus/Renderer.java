@@ -45,6 +45,10 @@ public class Renderer {
         transformation = new Transformation();
     }
 
+    public Transformation getTransformation() {
+        return transformation;
+    }
+
     public void init(Window window, List<IShaderHandler> shaderHandlers) throws Exception{
         setupBaseObjectShader();
         setupLightObjectShader();;
@@ -65,6 +69,18 @@ public class Renderer {
         {
             shaderHandler.setupUniforms();
         }
+    }
+
+    public static float getFOV() {
+        return FOV;
+    }
+
+    public static float getzNear() {
+        return Z_NEAR;
+    }
+
+    public static float getzFar() {
+        return Z_FAR;
     }
 
     private void setupLightObjectShader() throws  Exception{

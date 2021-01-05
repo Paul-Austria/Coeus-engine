@@ -19,10 +19,15 @@ public class MouseInput {
 
     private boolean rightButtonPressed = false;
 
+    private ObjectSelection objectSelection;
+
+
+
     public MouseInput() {
         previousPos = new Vector2d(-1, -1);
         currentPos = new Vector2d(0, 0);
         displVec = new Vector2f();
+        objectSelection = new ObjectSelection();
     }
 
     public void init(Window window) {
@@ -39,10 +44,17 @@ public class MouseInput {
         });
     }
 
+
+    public ObjectSelection getObjectSelection() {
+        return objectSelection;
+    }
+
     public Vector2f getDisplVec() {
         return displVec;
     }
-
+    public Vector2d getCurrentPos() {
+        return currentPos;
+    }
 
     public void input(Window window) {
         displVec.x = 0;

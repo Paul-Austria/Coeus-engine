@@ -8,13 +8,9 @@ import paul.coeus.objects.Base.GameObject;
 
 public class Transformation {
     private final Matrix4f projectionMatrix;
-
     private final Matrix4f worldMatrix;
-
     private final Matrix4f viewMatrix;
     private final Matrix4f modelViewMatrix;
-
-
 
 
     public Transformation() {

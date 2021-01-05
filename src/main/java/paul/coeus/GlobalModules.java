@@ -10,6 +10,7 @@ public class GlobalModules {
     private static Camera camera;
     private static Texture tx;
     private static FBO fbo;
+    private static Renderer renderer;
 
 
     public static FBO getFbo() {
@@ -18,6 +19,14 @@ public class GlobalModules {
 
     public static void setFbo(FBO fbo) {
         GlobalModules.fbo = fbo;
+    }
+
+    public static Renderer getRenderer() {
+        return renderer;
+    }
+
+    public static void setRenderer(Renderer renderer) {
+        GlobalModules.renderer = renderer;
     }
 
     public static Texture getTx() {

@@ -28,10 +28,9 @@ public class Engine extends Thread {
     private MouseInput mouseInput;
     public static final int TARGET_UPS = 30;
     Camera camera;
-    private GameObject[] gameObjectArray;
 
     private HashMap<Class, List<GameObject>> gameObjects;
-
+    private List<GameObject> pureGameObject;
     private List<IShaderHandler> shaders;
     private List<PointLight> pointLightList;
     private PointLight[] pointLights;
@@ -41,6 +40,7 @@ public class Engine extends Thread {
     public Engine(String title, int width, int height, boolean vSync, IGameLogic gameLogic)
     {
         gameObjects = new HashMap<>();
+        pureGameObject = new ArrayList<>();
         shaders = new ArrayList<>();
         shaders.add(new BaseShaderHandler());
         pointLightList = new ArrayList<>();
@@ -49,8 +49,11 @@ public class Engine extends Thread {
         mouseInput = new MouseInput();
         timer = new Timer();
         renderer = new Renderer();
+        GlobalModules.setRenderer(renderer);
         camera = new Camera();
         GlobalModules.setCamera(camera);
+        mouseInput = new MouseInput();
+
     }
 
     @Override
@@ -93,6 +96,23 @@ public class Engine extends Thread {
         addShader(new SkyBoxShaderHandler());
     }
 
+    public MouseInput getMouseInput() {
+        return mouseInput;
+    }
+
+    public void setMouseInput(MouseInput mouseInput) {
+        this.mouseInput = mouseInput;
+    }
+
+    public GameObject getSelected()
+    {
+        if(mouseInput.isLeftButtonPressed()) {
+            System.out.println(pureGameObject.size());
+            return mouseInput.getObjectSelection().selectGameItem( pureGameObject.toArray(new GameObject[pureGameObject.size()]), window, mouseInput.getCurrentPos(), camera);
+        }
+        return null;
+    }
+
     protected void init() throws Exception {
         timer.init();
 
@@ -101,7 +121,7 @@ public class Engine extends Thread {
         skyBox =  new SkyBox("src/main/Texture/skybox.png");
         addGameObject(skyBox);
         addShader(new SkyBoxShaderHandler());
-
+        mouseInput.init(window);
         gameLogic.init(window,this);
 
 
@@ -116,7 +136,7 @@ public class Engine extends Thread {
     {
         window.getFrame().getContainer().clearChildComponents();
         gameObjects.clear();
-        gameObjectArray = new GameObject[0];
+        pureGameObject.clear();
         pointLightList.clear();
         pointLights = new PointLight[0];
     }
@@ -127,13 +147,16 @@ public class Engine extends Thread {
             List nList = new ArrayList();
             nList.add(gameObject);
             gameObjects.put(gameObject.getShader().getClass(), nList);
+            pureGameObject.add(gameObject);
             return  true;
         }
         else if(!gameObjects.get(gameObject.getShader().getClass()).contains(gameObject))
         {
             gameObjects.get(gameObject.getShader().getClass()).add(gameObject);
+            pureGameObject.add(gameObject);
             return true;
         }
+
         return false;
     }
 
@@ -176,6 +199,8 @@ public class Engine extends Thread {
     public boolean removeGameObject(GameObject gameObject){
         if(gameObjects.containsKey(gameObject.getShader().getClass()))
         {
+
+            pureGameObject.remove(gameObject);
             return gameObjects.get(gameObject.getShader().getClass()).remove(gameObject);
         }
         return false;

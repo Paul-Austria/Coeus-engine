@@ -6,6 +6,7 @@ import paul.coeus.base.IGameLogic;
 import paul.coeus.base.IScene;
 import paul.coeus.base.Window;
 import paul.coeus.graphics.Camera;
+import paul.coeus.utils.IO.MouseInput;
 
 import java.util.ArrayList;
 import java.util.List;

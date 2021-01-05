@@ -86,6 +86,7 @@ public class DemoScene implements IScene {
             engine.addPointLight(p);
         }
 
+
     }
 
     @Override
@@ -93,5 +94,11 @@ public class DemoScene implements IScene {
         gameObject.getRotation().x += 0.5;
         gameObject.getRotation().y += 0.5;
         gameObject.getRotation().z += 0.5;
+
+        GameObject x = gameLogic.getEngine().getSelected();
+        if(x != null)
+        {
+            System.out.println(x);
+        }
     }
 }
