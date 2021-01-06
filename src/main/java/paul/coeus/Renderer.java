@@ -2,17 +2,14 @@ package paul.coeus;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 import paul.coeus.base.Window;
 import paul.coeus.graphics.Camera;
-import paul.coeus.graphics.Material.Lights.DirectionalLight;
-import paul.coeus.graphics.Material.Lights.PointLight;
+import paul.coeus.objects.Base.Lights.DirectionalLight;
+import paul.coeus.objects.Base.Lights.PointLight;
 import paul.coeus.graphics.graphUtils.Transformation;
 import paul.coeus.graphics.postProcessing.FBO;
 import paul.coeus.objects.Base.GameObject;
 import paul.coeus.objects.Base.ShaderHandler.IShaderHandler;
-import paul.coeus.utils.ShaderProgram;
-import paul.coeus.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,8 +33,6 @@ public class Renderer {
     private Matrix4f projectionMatrix;
     private float specularPower;
     private Transformation transformation;
-    private ShaderProgram baseObjectShader;
-    private  ShaderProgram lightObjectShader;
 
     List<IShaderHandler> customShaders = new ArrayList<>();
     public Renderer(){
@@ -50,8 +45,7 @@ public class Renderer {
     }
 
     public void init(Window window, List<IShaderHandler> shaderHandlers) throws Exception{
-        setupBaseObjectShader();
-        setupLightObjectShader();;
+
         setupCustomShaders();
         setupShaders(shaderHandlers);
         GlobalModules.setFbo(new FBO());         //      window.setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -83,48 +77,11 @@ public class Renderer {
         return Z_FAR;
     }
 
-    private void setupLightObjectShader() throws  Exception{
-        lightObjectShader = new ShaderProgram();
-        lightObjectShader.createVertexShader(Utils.loadResource("/shaders/Point_Light_Shader/vertex.vs"));
-        lightObjectShader.createFragmentShader(Utils.loadResource("/shaders/Point_Light_Shader/fragment.fs"));
-        lightObjectShader.link();
-
-        lightObjectShader.createUniform("projectionMatrix");
-        lightObjectShader.createUniform("modelViewMatrix");
-        lightObjectShader.createUniform("colour");
-    }
-    private void setupBaseObjectShader() throws Exception {
-        baseObjectShader = new ShaderProgram();
-        baseObjectShader.createVertexShader(Utils.loadResource("/shaders/object_shader/vertex.vs"));
-        baseObjectShader.createFragmentShader(Utils.loadResource("/shaders/object_shader/fragment.fs"));
-        baseObjectShader.link();
-
-        // projection Matrix
-        baseObjectShader.createUniform("projectionMatrix");
-        baseObjectShader.createUniform("modelViewMatrix");
-        baseObjectShader.createUniform("texture_sampler");
-        // Create uniform for material
-        baseObjectShader.createMaterialUniform("material");
-        // Create lighting related uniforms
-        baseObjectShader.createUniform("specularPower");
-        baseObjectShader.createUniform("ambientLight");
-        baseObjectShader.createPointLightListUniform("pointLights", MAX_POINT_LIGHTS);
-
-        baseObjectShader.createDirectionalLightUniform("directionalLight");
-    }
-
-
-
-
     Vector3f ambientLight = new Vector3f(0.3f, 0.3f, 0.3f);
     DirectionalLight directionalLight = new DirectionalLight(new Vector3f(1,1,1),1, 0);
     public void clear() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
-
-
-
-
 
     public void render(Window window, HashMap<Class, List<GameObject>>gameObjects , List<IShaderHandler> shaders, PointLight[] pointLights, Camera camera) {
         clear();
@@ -146,8 +103,8 @@ public class Renderer {
         glBindFramebuffer(GL_FRAMEBUFFER, GlobalModules.getFbo().getId());
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        RenderOtherObjects(viewMatrix, pointLights, window, gameObjects,shaders, projectionMatrix);
-        RenderLightObjects(viewMatrix, pointLights, projectionMatrix);
+        RenderObjects(viewMatrix, pointLights, window, gameObjects,shaders, projectionMatrix);
+        //RenderLightObjects(viewMatrix, pointLights, projectionMatrix);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         if(window.isDebugMode() )
@@ -173,7 +130,7 @@ public class Renderer {
         GlobalModules.getFbo().getShaderHandler().getShaderProgram().unbind();
     }
 
-    private void RenderOtherObjects(Matrix4f viewMatrix, PointLight[] pointLights, Window window, HashMap<Class, List<GameObject>> gameObjects,List<IShaderHandler> shaders, Matrix4f projectionMatrix) {
+    private void RenderObjects(Matrix4f viewMatrix, PointLight[] pointLights, Window window, HashMap<Class, List<GameObject>> gameObjects, List<IShaderHandler> shaders, Matrix4f projectionMatrix) {
         for (IShaderHandler shader: shaders) {
             if(gameObjects.get(shader.getClass()) != null) {
                 shader.getShaderProgram().bind();
@@ -201,34 +158,13 @@ public class Renderer {
             shaderHandler.RenderLights(viewMatrix, pointLights, directionalLight, ambientLight, specularPower);
         }
     }
-    public void RenderLightObjects(Matrix4f viewMatrix,PointLight[] pointLights, Matrix4f projectionMatrix)
-    {
-
-
-        lightObjectShader.bind();
-        lightObjectShader.setUniform("projectionMatrix", projectionMatrix);
-        for (PointLight pointLight : pointLights)
-        {
-            if(pointLight.getGameObject() != null)
-            {
-                Matrix4f modelViewMatrix = transformation.getModelViewMatrix(pointLight, viewMatrix);
-                lightObjectShader.setUniform("modelViewMatrix", modelViewMatrix);
-
-                lightObjectShader.setUniform("colour", new Vector4f(pointLight.getColor(), pointLight.getIntensity()));
-                pointLight.getGameObject().getMesh().render();
-            }
-        }
-
-        lightObjectShader.unbind();
-    }
 
     public void cleanup() {
-        if (baseObjectShader != null) {
-            baseObjectShader.cleanup();
+
+        for (IShaderHandler shaderHandler : customShaders)
+        {
+            shaderHandler.getShaderProgram().cleanup();
         }
 
-    }
-
-    private void glDisableVertexAttribArray(int i) {
     }
 }

@@ -2,12 +2,9 @@ package paul.coeus.objects.Base.ShaderHandler;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import paul.coeus.graphics.Material.Lights.DirectionalLight;
-import paul.coeus.graphics.Material.Lights.PointLight;
-import paul.coeus.objects.Base.GameObject;
+import paul.coeus.objects.Base.Lights.DirectionalLight;
+import paul.coeus.objects.Base.Lights.PointLight;
 import paul.coeus.utils.ShaderProgram;
-
-import java.awt.*;
 
 public interface IShaderHandler {
 

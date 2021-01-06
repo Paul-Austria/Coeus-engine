@@ -1,12 +1,16 @@
-package paul.coeus.graphics.Material.Lights;
+package paul.coeus.objects.Base.Lights;
 
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import paul.coeus.graphics.Mesh;
+import paul.coeus.graphics.graphUtils.Transformation;
 import paul.coeus.objects.Base.GameObject;
+import paul.coeus.objects.Base.ShaderHandler.LightShaderHandler;
 import paul.coeus.utils.LoadObjects;
+import paul.coeus.utils.ShaderProgram;
 
-public class PointLight{
+public class PointLight extends GameObject{
     private Vector3f color;
 
     private Vector3f position;
@@ -15,9 +19,9 @@ public class PointLight{
 
     private Attenuation attenuation;
 
-    GameObject gameObject;
-
     public PointLight(Vector3f color, Vector3f position, float intensity) {
+        super();
+        setVisible(false);
         attenuation = new Attenuation(1, 0, 0);
         this.color = color;
         this.position = position;
@@ -34,19 +38,28 @@ public class PointLight{
                 pointLight.getIntensity(), pointLight.getAttenuation());
     }
 
+    @Override
+    public void setLocalUniforms(ShaderProgram shaderProgram, Matrix4f viewMatrix, Transformation transformation){
+        Matrix4f modelViewMatrix = transformation.getModelViewMatrix(this, viewMatrix);
+        shaderProgram.setUniform("modelViewMatrix", modelViewMatrix);
+        shaderProgram.setUniform("colour", new Vector4f(getColor(), getIntensity()));
+    }
+
     public void setLightCube(){
         try {
             Mesh m = LoadObjects.loadOBJ("src/main/Objects/test.obj");
             m.getMaterial().setAmbientC(new Vector4f(color, intensity));
-            gameObject = new GameObject(m);
-            gameObject.setScale(0.2f);
+            setShaderHandler(new LightShaderHandler());
+             setMesh(m);
+            setScale(0.2f);
+            setVisible(true);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
     public void removeLightCube(){
-        gameObject = null;
+        setVisible(false);
     }
 
     public Vector3f getColor() {
@@ -54,7 +67,7 @@ public class PointLight{
     }
 
     public void setColor(Vector3f color) {
-        if(gameObject != null)gameObject.getMesh().getMaterial().setAmbientC(new Vector4f(color, intensity));
+        if(isVisible())getMesh().getMaterial().setAmbientC(new Vector4f(color, intensity));
         this.color = color;
     }
 
@@ -71,7 +84,7 @@ public class PointLight{
     }
 
     public void setIntensity(float intensity) {
-        if(gameObject != null)gameObject.getMesh().getMaterial().setAmbientC(new Vector4f(color, intensity));
+        if(isVisible())getMesh().getMaterial().setAmbientC(new Vector4f(color, intensity));
         this.intensity = intensity;
     }
 
@@ -80,7 +93,7 @@ public class PointLight{
     }
 
     public GameObject getGameObject() {
-        return gameObject;
+        return this;
     }
 
     public void setAttenuation(Attenuation attenuation) {

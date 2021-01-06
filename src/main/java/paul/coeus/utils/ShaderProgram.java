@@ -4,8 +4,8 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.system.MemoryStack;
-import paul.coeus.graphics.Material.Lights.DirectionalLight;
-import paul.coeus.graphics.Material.Lights.PointLight;
+import paul.coeus.objects.Base.Lights.DirectionalLight;
+import paul.coeus.objects.Base.Lights.PointLight;
 import paul.coeus.graphics.Material.Material;
 
 import java.nio.FloatBuffer;

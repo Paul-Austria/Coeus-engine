@@ -1,4 +1,4 @@
-package paul.coeus.graphics.Material.Lights;
+package paul.coeus.objects.Base.Lights;
 
 import org.joml.Vector3f;
 

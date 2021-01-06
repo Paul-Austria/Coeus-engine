@@ -3,7 +3,7 @@ package paul.coeus.graphics.graphUtils;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import paul.coeus.graphics.Camera;
-import paul.coeus.graphics.Material.Lights.PointLight;
+import paul.coeus.objects.Base.Lights.PointLight;
 import paul.coeus.objects.Base.GameObject;
 
 public class Transformation {

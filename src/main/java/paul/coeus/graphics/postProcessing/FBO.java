@@ -37,7 +37,6 @@ public class FBO {
         depthBuffer = createDepthBuffer(GlobalModules.getWindow().getWidth(), GlobalModules.getWindow().getHeight());
 
 
-
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
             throw new Exception("Could not create FrameBuffer");
         }

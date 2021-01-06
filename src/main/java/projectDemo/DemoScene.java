@@ -1,25 +1,19 @@
 package projectDemo;
 
-import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.liquidengine.legui.component.Button;
-import org.liquidengine.legui.component.ImageView;
 import org.liquidengine.legui.event.MouseClickEvent;
-import org.liquidengine.legui.image.FBOImage;
 import org.liquidengine.legui.listener.MouseClickEventListener;
-import org.liquidengine.legui.style.Style;
 import paul.coeus.Engine;
 import paul.coeus.GlobalModules;
 import paul.coeus.base.IGameLogic;
 import paul.coeus.base.IScene;
-import paul.coeus.graphics.Material.Lights.PointLight;
+import paul.coeus.objects.Base.Lights.PointLight;
 import paul.coeus.graphics.Mesh;
 import paul.coeus.graphics.Material.Texture;
 import paul.coeus.objects.Base.GameObject;
 import paul.coeus.utils.LoadObjects;
-
-import java.awt.*;
 
 public class DemoScene implements IScene {
     IGameLogic gameLogic;
@@ -45,6 +39,7 @@ public class DemoScene implements IScene {
 
         this.gameLogic = gameLogic;
         Engine engine = gameLogic.getEngine();
+
 
         Mesh m = LoadObjects.loadOBJ("src/main/Objects/test.obj");
         m.setTexture(new Texture("src/main/Texture/grassblock.png"));

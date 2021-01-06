@@ -175,9 +175,6 @@ public class Window {
         UIRenderer = new NvgRenderer();
         UIRenderer.initialize();
         frame = new Frame(this.width, this.height);
-
-
-
         frame.getContainer().setFocusable(false);
     }
 

@@ -3,10 +3,11 @@ package paul.coeus;
 import paul.coeus.base.IGameLogic;
 import paul.coeus.base.Window;
 import paul.coeus.graphics.Camera;
-import paul.coeus.graphics.Material.Lights.PointLight;
+import paul.coeus.objects.Base.Lights.PointLight;
 import paul.coeus.objects.Base.GameObject;
 import paul.coeus.objects.Base.ShaderHandler.BaseShaderHandler;
 import paul.coeus.objects.Base.ShaderHandler.IShaderHandler;
+import paul.coeus.objects.Base.ShaderHandler.LightShaderHandler;
 import paul.coeus.objects.Base.ShaderHandler.SkyBoxShaderHandler;
 import paul.coeus.objects.Base.SkyBox;
 import paul.coeus.objects.ImagePlane;
@@ -121,6 +122,7 @@ public class Engine extends Thread {
         skyBox =  new SkyBox("src/main/Texture/skybox.png");
         addGameObject(skyBox);
         addShader(new SkyBoxShaderHandler());
+        addShader(new LightShaderHandler());
         mouseInput.init(window);
         gameLogic.init(window,this);
 
@@ -166,6 +168,7 @@ public class Engine extends Thread {
         {
             pointLightList.add(pointLight);
             pointLights = pointLightList.toArray(new PointLight[pointLightList.size()]);
+            addGameObject(pointLight);
             return  true;
         }
         return false;
@@ -191,6 +194,7 @@ public class Engine extends Thread {
         {
             pointLightList.remove(pointLight);
             pointLights = pointLightList.toArray(new PointLight[pointLightList.size()]);
+            removeGameObject(pointLight);
             return  true;
         }
         return false;
