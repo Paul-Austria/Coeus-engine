@@ -169,6 +169,7 @@ public class Engine extends Thread {
     }
 
     public boolean removeGameObject(GameObject gameObject){
+        if(gameObject == null) return false;
         if(gameObjects.containsKey(gameObject.getShader().getClass()))
         {
             return gameObjects.get(gameObject.getShader().getClass()).remove(gameObject);

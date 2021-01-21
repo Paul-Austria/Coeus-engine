@@ -135,11 +135,12 @@ public class Renderer {
             shader.setGlobalUniforms(projectionMatrix);
             List<GameObject> toRender = gameObjects.get(shader.getClass());
 
-            for (GameObject gameObject: toRender) {
-                gameObject.setLocalUniforms(shader.getShaderProgram(), viewMatrix, transformation);
-                gameObject.getMesh().render();
+            if(toRender != null) {
+                for (GameObject gameObject : toRender) {
+                    gameObject.setLocalUniforms(shader.getShaderProgram(), viewMatrix, transformation);
+                    gameObject.getMesh().render();
+                }
             }
-
             shader.getShaderProgram().unbind();
         }
     }

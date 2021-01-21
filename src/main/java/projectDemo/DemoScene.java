@@ -3,11 +3,16 @@ package projectDemo;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.liquidengine.legui.component.Button;
+import org.liquidengine.legui.component.TextInput;
+import org.liquidengine.legui.component.optional.align.HorizontalAlign;
+import org.liquidengine.legui.event.KeyEvent;
 import org.liquidengine.legui.event.MouseClickEvent;
+import org.liquidengine.legui.listener.KeyEventListener;
 import org.liquidengine.legui.listener.MouseClickEventListener;
 import org.liquidengine.legui.style.Style;
 import org.liquidengine.legui.style.border.SimpleLineBorder;
 import org.liquidengine.legui.style.color.ColorConstants;
+import org.lwjgl.glfw.GLFW;
 import paul.coeus.Engine;
 import paul.coeus.GlobalModules;
 import paul.coeus.base.IGameLogic;
@@ -22,11 +27,15 @@ import paul.coeus.objects.Base.SkyBox;
 import paul.coeus.objects.ImagePlane;
 import paul.coeus.utils.LoadObjects;
 
+import javax.swing.*;
 import java.awt.*;
+
+import static org.liquidengine.legui.component.optional.align.HorizontalAlign.*;
 
 public class DemoScene implements IScene {
     IGameLogic gameLogic;
     int i;
+    private GameObject gameObject;
 
     @Override
     public void setupUI() {
@@ -34,32 +43,89 @@ public class DemoScene implements IScene {
 
         button.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) event -> {
             if(button.isPressed()) {
-                i++;
-                System.out.println("Button pressed" + i);
+                JFileChooser chooser = new JFileChooser();
+                // Dialog zum Oeffnen von Dateien anzeigen
+                int rt = chooser.showOpenDialog(null);
+
+                if(rt == JFileChooser.APPROVE_OPTION)
+                {
+                    Mesh m = null;
+                    try {
+                        m = LoadObjects.loadOBJ(chooser.getSelectedFile().getPath());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        m.setTexture(new Texture("src/main/Texture/grassblock.png"));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    m.getMaterial().setAmbientC(new Vector4f(1,0,0,1));
+                    gameObject = new GameObject(m);
+                    gameObject.getMesh().getMaterial().setReflectance(0.1f);
+                    gameLogic.getEngine().addGameObject(gameObject);
+                    gameObject.setPosition(0,0,-0);
+                }
             }});
-
-
         GlobalModules.getWindow().getFrame().getContainer().add(button);
+
+
+
+        Button button2 = new Button("x+", 0, 120, 20, 20);
+
+        button2.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) event -> {
+            if(button2.isPressed()) {
+                    gameObject.getPosition().x += 1;
+            }});
+        GlobalModules.getWindow().getFrame().getContainer().add(button2);
+
+        Button button3 = new Button("x-", 0, 140, 20, 20);
+
+        button3.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) event -> {
+            if(button3.isPressed()) {
+                gameObject.getPosition().x -= 1;
+            }});
+        GlobalModules.getWindow().getFrame().getContainer().add(button3);
+
+        Button button4 = new Button("y+", 0, 160, 20, 20);
+
+        button4.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) event -> {
+            if(button4.isPressed()) {
+                gameObject.getPosition().y += 1;
+            }});
+        GlobalModules.getWindow().getFrame().getContainer().add(button4);
+
+
+        Button button5 = new Button("y-", 0, 180, 20, 20);
+
+        button5.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) event -> {
+            if(button5.isPressed()) {
+                gameObject.getPosition().y -= 1;
+            }});
+        GlobalModules.getWindow().getFrame().getContainer().add(button5);
+
+        Button button6 = new Button("z+", 0, 200, 20, 20);
+
+        button6.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) event -> {
+            if(button6.isPressed()) {
+                gameObject.getPosition().z += 1;
+            }});
+        GlobalModules.getWindow().getFrame().getContainer().add(button6);
+
+
+        Button button7 = new Button("z-", 0, 220, 20, 20);
+
+        button7.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) event -> {
+            if(button7.isPressed()) {
+                gameObject.getPosition().z -= 1;
+            }});
+        GlobalModules.getWindow().getFrame().getContainer().add(button7);
     }
 
     @Override
     public void init(IGameLogic gameLogic) throws Exception {
         this.gameLogic = gameLogic;
         Engine engine = gameLogic.getEngine();
-
-            Mesh m2 = LoadObjects.loadOBJ("src/main/Objects/quad.obj");
-            m2.setTexture(new Texture("src/main/Texture/Rock/rock.png"));
-            m2.setNormal(new Texture("src/main/Texture/Rock/rock_normals.png"));
-            m2.getMaterial().setAmbientC(new Vector4f(1,0,0,1));
-            m2.getMaterial().setReflectance(0.1f);
-            GameObject gameObject1 = new GameObject(m2);
-            gameObject1.setRotation(0, 0, 0);;
-            gameObject1.setScale(10);
-            gameObject1.setPosition(10,-3,0);
-;
-            engine.addGameObject(gameObject1);
-
-
 
 
 
@@ -79,5 +145,8 @@ public class DemoScene implements IScene {
 
     @Override
     public void update(float interval) {
+        if(gameObject != null)
+        {
+        }
     }
 }
