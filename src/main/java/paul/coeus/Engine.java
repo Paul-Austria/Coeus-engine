@@ -132,6 +132,10 @@ public class Engine extends Thread {
         return false;
     }
 
+    public List<GameObject> getGameObjects(){
+        return gameObjects.get(BaseShaderHandler.class);
+    }
+
     public boolean addPointLight(PointLight pointLight)
     {
         if(!pointLightList.contains(pointLight))

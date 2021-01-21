@@ -36,30 +36,29 @@ public class DemoScene implements IScene {
     IGameLogic gameLogic;
     int i;
     private GameObject gameObject;
+    int pos = 0;
+    Mesh m = null;
 
     @Override
     public void setupUI() {
-        Button button = new Button("Add components", 20, 20, 160, 30);
+        Engine engine = gameLogic.getEngine();
 
-        button.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) event -> {
-            if(button.isPressed()) {
+        Button addComponent = new Button("Add components", 20, 20, 160, 30);
+
+        addComponent.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) event -> {
+            if(addComponent.isPressed()) {
                 JFileChooser chooser = new JFileChooser();
                 // Dialog zum Oeffnen von Dateien anzeigen
                 int rt = chooser.showOpenDialog(null);
 
                 if(rt == JFileChooser.APPROVE_OPTION)
                 {
-                    Mesh m = null;
                     try {
                         m = LoadObjects.loadOBJ(chooser.getSelectedFile().getPath());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    try {
-                        m.setTexture(new Texture("src/main/Texture/grassblock.png"));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+
                     m.getMaterial().setAmbientC(new Vector4f(1,0,0,1));
                     gameObject = new GameObject(m);
                     gameObject.getMesh().getMaterial().setReflectance(0.1f);
@@ -67,67 +66,91 @@ public class DemoScene implements IScene {
                     gameObject.setPosition(0,0,-0);
                 }
             }});
-        GlobalModules.getWindow().getFrame().getContainer().add(button);
+        GlobalModules.getWindow().getFrame().getContainer().add(addComponent);
 
+        Button changeTexture = new Button("Change texture", 20, 60, 160, 30);
 
+        changeTexture.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) event -> {
+            if(changeTexture.isPressed()) {
+                JFileChooser chooser = new JFileChooser();
+                int rt = chooser.showOpenDialog(null);
 
-        Button button2 = new Button("x+", 0, 120, 20, 20);
+                if(rt == JFileChooser.APPROVE_OPTION)
+                {
+                    try {
+                        m.setTexture(new Texture(chooser.getSelectedFile().getPath()));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }});
+        GlobalModules.getWindow().getFrame().getContainer().add(changeTexture);
 
-        button2.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) event -> {
-            if(button2.isPressed()) {
+        Button positiveX = new Button("x+", 0, 120, 20, 20);
+
+        positiveX.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) event -> {
+            if(positiveX.isPressed()) {
                     gameObject.getPosition().x += 1;
             }});
-        GlobalModules.getWindow().getFrame().getContainer().add(button2);
+        GlobalModules.getWindow().getFrame().getContainer().add(positiveX);
 
-        Button button3 = new Button("x-", 0, 140, 20, 20);
+        Button negativeX = new Button("x-", 0, 140, 20, 20);
 
-        button3.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) event -> {
-            if(button3.isPressed()) {
+        negativeX.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) event -> {
+            if(negativeX.isPressed()) {
                 gameObject.getPosition().x -= 1;
             }});
-        GlobalModules.getWindow().getFrame().getContainer().add(button3);
+        GlobalModules.getWindow().getFrame().getContainer().add(negativeX);
 
-        Button button4 = new Button("y+", 0, 160, 20, 20);
+        Button positiveY = new Button("y+", 0, 160, 20, 20);
 
-        button4.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) event -> {
-            if(button4.isPressed()) {
+        positiveY.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) event -> {
+            if(positiveY.isPressed()) {
                 gameObject.getPosition().y += 1;
             }});
-        GlobalModules.getWindow().getFrame().getContainer().add(button4);
+        GlobalModules.getWindow().getFrame().getContainer().add(positiveY);
 
+        Button negativeY = new Button("y-", 0, 180, 20, 20);
 
-        Button button5 = new Button("y-", 0, 180, 20, 20);
-
-        button5.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) event -> {
-            if(button5.isPressed()) {
+        negativeY.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) event -> {
+            if(negativeY.isPressed()) {
                 gameObject.getPosition().y -= 1;
             }});
-        GlobalModules.getWindow().getFrame().getContainer().add(button5);
+        GlobalModules.getWindow().getFrame().getContainer().add(negativeY);
 
-        Button button6 = new Button("z+", 0, 200, 20, 20);
+        Button positiveZ = new Button("z+", 0, 200, 20, 20);
 
-        button6.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) event -> {
-            if(button6.isPressed()) {
+        positiveZ.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) event -> {
+            if(positiveZ.isPressed()) {
                 gameObject.getPosition().z += 1;
             }});
-        GlobalModules.getWindow().getFrame().getContainer().add(button6);
+        GlobalModules.getWindow().getFrame().getContainer().add(positiveZ);
 
+        Button negativeZ = new Button("z-", 0, 220, 20, 20);
 
-        Button button7 = new Button("z-", 0, 220, 20, 20);
-
-        button7.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) event -> {
-            if(button7.isPressed()) {
+        negativeZ.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) event -> {
+            if(negativeZ.isPressed()) {
                 gameObject.getPosition().z -= 1;
             }});
-        GlobalModules.getWindow().getFrame().getContainer().add(button7);
+        GlobalModules.getWindow().getFrame().getContainer().add(negativeZ);
+
+        Button changeLastObj = new Button(">", 0, 240, 20, 20);
+
+        changeLastObj.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) event -> {
+            if(changeLastObj.isPressed()) {
+                pos++;
+                if (pos >= engine.getGameObjects().size()) {
+                    pos = 0;
+                }
+                gameObject = engine.getGameObjects().get(pos);
+            }});
+        GlobalModules.getWindow().getFrame().getContainer().add(changeLastObj);
     }
 
     @Override
     public void init(IGameLogic gameLogic) throws Exception {
         this.gameLogic = gameLogic;
         Engine engine = gameLogic.getEngine();
-
-
 
         PointLight[] pointLights = new  PointLight[]{
                 new PointLight(new Vector3f(1, 1, 1),new Vector3f(10, -2, 5), 1f )
